@@ -1,27 +1,11 @@
-# TODO ###### indented items are already done """"""""
-# ## urpatools / urpautils
-#  - parellel search
-#  - nastaveni robota + nastaveni rozliseni (jedna funkce)
-#       - zabijeni aplikaci
-#  - archivace
-#  - kopirovani error screenshotu
-#       - obsluha helper souboru (trida s metodama `write`, `get`, `increment`, `delete`)
-#       - obecne zapisovani/cteni/appendovani/mazani .txt souboru
-#  - kontrola prvku
-#       - notifikacni email
-#       - get timestamp (s moznosti leading zeroes nebo bez nich)
-#       - funkce pro pridani prefixu pred cestu k souboru pro obejiti win32api limitu 260 znaku. Prida prefix `\\?\` nebo `\\?\UNC\` podle toho, zda se jedna o sitove uloziste nebo ne
-#       - priprava adresare (vytvori ho, pokud neexistuje)
-#  - zjisteni typu souboru podle jeho signature: https://en.wikipedia.org/wiki/List_of_file_signatures . Nevim, v kolika robotech to je pouzitelne, ale v cmzrb se mi to ted hodilo. Kdyz DA vracelo excel soubor v base64 a ja jsem musel zjistit, zda to je xls nebo xlsx
-#       - mazani cache IE
-#       - mazani souboru z konkretniho adresare, ktere jsou starsi nez XXXX
-#  - nejaka trida pro operovani s CSV - write row, read row, read all rows, ....
-# ​
-# ## utility pro bussiness logiku
-#       - kontrola spravnosti ICa / Rodneho cisla   --------------------- ZATIM MAM POUZE ICO
+"""Module containing universal functions that can be used with urpa robots"""
+
 import datetime
+import glob
 import logging
 import os
+import re
+import shutil
 import smtplib
 import subprocess
 import time
@@ -30,12 +14,14 @@ from email import charset
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Union
+from typing import Optional
+
+import __main__
 
 logger = logging.getLogger(__name__)
 
 
-def timestamp(format: str="%d.%m.%Y %H:%M:%S", pad_date_with_zeros: bool=True) -> str:
+def timestamp(format: str = "%d.%m.%Y %H:%M:%S", pad_date_with_zeros: bool = True) -> str:
     """Returns formatted timestamp
 
     :param format:               timestamp format
@@ -43,14 +29,15 @@ def timestamp(format: str="%d.%m.%Y %H:%M:%S", pad_date_with_zeros: bool=True) -
     :return:                     timestamp string
     """
     if not pad_date_with_zeros:
-        format = format.replace("%m","%#m").replace("%d","%#d")
+        format = format.replace("%m", "%#m").replace("%d", "%#d")
     return datetime.datetime.now().strftime(format)
 
 
-def add_path_prefix(path: str) -> str:
+def add_long_path_prefix(path: str) -> str:
     r"""Returns original path with prefix to avoid win32api 260 char limit
     C:\Temp -> \\?\C:\Temp
     \\net\folder -> \\?\UNC\net\folder
+    https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=cmd
 
     :param path:          path
     :return:              original path with prefix
@@ -58,13 +45,13 @@ def add_path_prefix(path: str) -> str:
     local_prefix = "\\\\?\\"
     network_prefix = "\\\\?\\UNC\\"
     if path[0:2] == "\\\\":
-        return f"{network_prefix}{path[2:]}" 
+        return f"{network_prefix}{path[2:]}"
     return f"{local_prefix}{path}"
 
 
 def prepare_dir(dir_name: str) -> None:
     """Creates directory dir_name if it does not exist
-    
+
     :param dir_name:      path
     :return:              None
     """
@@ -75,67 +62,18 @@ def prepare_dir(dir_name: str) -> None:
 
 def kill_app(image_name: str) -> None:
     """Kills app and its tree
-    
+
     :param image_name:      app image name
     :return:                None
     """
     subprocess.run(("taskkill", "/F", "/IM", f"{image_name}"))
 
 
-class Helper:
-    """Class for reading and writing helper text files"""
-
-    def __init__(self, file_name: str) -> None:
-        """Init. Creates file if it does not exist
-
-        :param file_name:      file name
-        """
-        self.file_name = file_name
-        if not os.path.isfile(file_name):
-            logger.info(f"Creating '{file_name}' file")
-            self.write(0)
-
-    def get(self) -> int:
-        """Reads the file and returns its content as integer
-
-        :return:    int
-        """
-        with open(self.file_name) as helper_file:
-            return int(helper_file.read())
-
-    def write(self, value: int) -> None:
-        """Writes integer 'value' to the file
-
-        :param value:    integer
-        :return:         None
-        """
-        if not isinstance(value, int):
-            logger.error(f"Value '{value}' is not an integer")
-            raise ValueError(f"Value '{value}' is not an integer")
-        with open(self.file_name, "w") as helper_file:
-            helper_file.write(str(value))
-
-    def increment(self, increment: int=1) -> int:
-        """Increments number in file by 'increment'
-        
-        :param increment:    how much to increment by
-        :return:             number after incrementing
-        """
-        new_value = self.get() + increment
-        self.write(new_value)
-        return new_value
-
-    def delete(self) -> None:
-        """Removes the file
-
-        :return:       None
-        """
-        os.remove(self.file_name)
-
-
-def send_email_notification(email_sender: str, recipients : list, recipient_copy : list, subject: str, body: str, smtp_server: str) -> None:
+def send_email_notification(
+    email_sender: str, recipients: list, recipients_copy: list, subject: str, body: str, smtp_server: str
+) -> None:
     """Sends an e-mail
-    
+
     :param email_sender:    sender of this e-mail
     :param recipients:      list of addresses of recipients
     :param recipients_copy: list of addresses of recipients of a copy
@@ -149,39 +87,89 @@ def send_email_notification(email_sender: str, recipients : list, recipient_copy
     mail["Subject"] = Header(subject, "utf-8")
     mail["From"] = email_sender
     mail["To"] = ", ".join(recipients)
-    mail["Cc"] = ", ".join(recipient_copy)
+    mail["Cc"] = ", ".join(recipients_copy)
     text = body
     html = "<html><body>" + body + "</body></html>"
     txt_message = MIMEText(text.encode("utf-8"), "plain", "utf-8")
     html_message = MIMEText(html.encode("utf-8"), "html", "utf-8")
     mail.attach(txt_message)
     mail.attach(html_message)
-    logger.info(f"Sending e-mail to '{recipients}', copy: '{recipient_copy}'")
+    logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
     logger.debug(f"Subject: '{subject}', body: '{body}'")
     sender = smtplib.SMTP(smtp_server)
     sender.set_debuglevel(1)
-    sender.sendmail(email_sender, recipients + recipient_copy, mail.as_string())
+    sender.sendmail(email_sender, recipients + recipients_copy, mail.as_string())
     sender.quit()
     logger.info("E-mail sent")
 
 
-def check_bin(bin: Union[str, int]) -> bool:
-    """Check whether a BIN (IČO) number is valid
+def _get_birth_date(number: str) -> datetime.date:
+    """Helper function for the verify_rc() function"""
+    year = 1900 + int(number[0:2])
+    # females have 50 added to the month value, 20 is added when the serial
+    # overflows (since 2004)
+    month = int(number[2:4]) % 50 % 20
+    day = int(number[4:6])
+    # 9 digit numbers were used until January 1st 1954
+    if len(number) == 9:
+        if year >= 1980:
+            year -= 100
+        if year > 1953:
+            raise ValueError("No 9 digit birth numbers after 1953.")
+    elif year < 1954:
+        year += 100
+    # this can also raise ValueError
+    return datetime.date(year, month, day)
+
+
+def verify_rc(number: str) -> bool:
+    """Check whether 'Rodné číslo' is valid
     https://phpfashion.com/jak-overit-platne-ic-a-rodne-cislo
 
-    :param bin:   string or integer of the BIN number
+    :param number:   string in format xxxxxxxxxx or xxxxxx/xxxx
+    :return:         bool
+    """
+    # check whether 'number' contains '/' and if its at 5th last place of the input (i.e. xxxxxx/xxxx)
+    # if yes, remove it
+    if number.count("/"):
+        if number.count("/") == 1 and len(number) - number.index("/") == 5:
+            number = number.replace("/", "")
+        else:
+            # the number has '/' but not in the right place or there are more than one
+            return False
+
+    if len(number) not in (9, 10):
+        return False
+    try:
+        birth_date = _get_birth_date(number)
+    except ValueError as err:
+        logger.debug(f"RC '{number}' not valid, could not verify birth date: '{str(err)}'")
+        return False
+    # check the check digit (10 digit numbers only)
+    if len(number) == 10:
+        check = int(number[:-1]) % 11
+        # before 1985 the checksum could be 0 or 10
+        if birth_date < datetime.date(1985, 1, 1):
+            check = check % 10
+        if number[-1] != str(check):
+            return False
+    return True
+
+
+def verify_ico(bin: str) -> bool:
+    """Check whether IČO number is valid
+    https://phpfashion.com/jak-overit-platne-ic-a-rodne-cislo
+
+    :param bin:   string of the BIN number
     :retun:       bool
     """
     if isinstance(bin, str):
-        if len(bin) != 8 or not bin.isnumeric():
+        if not bin.isnumeric() or len(bin) > 8:
             return False
-    elif isinstance(bin, int):
-        if 10000000 > bin > 99999999:
-            # must have 8 digits
-            return False
-        bin = str(bin)
+        # pad with zeros from left to length 8 (123456 -> 00123456)
+        bin.rjust(8, "0")
     else:
-        raise ValueError(f"'BIN' must be an instance of 'str' or 'int', not '{type(bin)}'")
+        raise ValueError(f"'BIN' must be an instance of 'str', not '{type(bin)}'")
 
     a = 0
     for i in range(7):
@@ -199,7 +187,7 @@ def check_bin(bin: Union[str, int]) -> bool:
 
 
 def clear_ie_cache() -> None:
-    r"""Clears Internet Explorer cache and makes registry change so it does not open customize window on first run
+    r"""Clears Internet Explorer cache and makes registry change so it does not open 'customize' window on first run
     RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255
     reg ADD "HKEY_CURRENT_USER\Software\Policies\Microsoft\Internet Explorer\Main" /v DisableFirstRunCustomize /d 1 /t REG_DWORD /f
     reg ADD "HKEY_CURRENT_USER\Software\Policies\Microsoft\Internet Explorer\Main" /v RunOnceComplete /d 1 /t REG_DWORD /f
@@ -249,3 +237,69 @@ def clear_ie_cache() -> None:
             "/f",
         )
     )
+
+
+def copy_error_img(
+    output_dir: str,
+    output_file_name: Optional[str] = None,
+    screenshot_format: str = "png",
+    current_log_dir: str = os.path.join(
+        "log", f"{os.path.basename(__main__.__file__).split('.')[0]}_{timestamp('%Y-%m-%d')}"
+    ),
+    offset: int = 0,
+) -> str:
+    r"""Finds 'screenshot_format' file in the 'current_log_dir' and copies it to 'output_dir'.
+    'offset' is used to determine which file to copy starting from the last
+        offset=0 -> last file, offset=1 -> second last file, ...
+    Files are ordered by their age in descending order. Last file (offset 0) is always the newest one
+
+    :param output_dir:           path
+    :param output_file_name:     optional name of the copied file. Name of the original is used if none provided
+    :param screenshot_format:    png, or bmp
+    :param current_log_dir:      directory containing the screenshots. Defaults to 'log\main_module_name_YYYY-MM-DD'
+    :param offset:               which file to copy, starting from last one
+    :return:                     str path to copied file
+    """
+    # remove dots from screenshot format in case user provided ".png" instead of "png"
+    screenshot_format = screenshot_format.replace(".", "")
+    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"))
+    error_img_path_log = error_imgs[-1 - offset]
+    if not output_file_name:
+        # if no output file name was provided, use name of the original image
+        output_file_name = os.path.basename(error_img_path_log)
+    else:
+        output_file_name += f".{screenshot_format}"
+    error_img_path_output = os.path.join(output_dir, output_file_name)
+    shutil.copyfile(error_img_path_log, error_img_path_output)
+    return error_img_path_output
+
+
+def get_app_pid(
+    app_name: str, pids_to_exclude: list = [], number_of_retries: int = 3, wait_before_next_try: int = 10000
+) -> int:
+    """Finds all PIDs of an 'app_name' application and returns first one
+
+    :param app_name:              image name of the app
+    :param pids_to_exclude:       list of PIDs that are filtered out
+    :param number_of_retries:     number of retries
+    :param wait_before_next_try:  amount of miliseconds to wait before next try
+    :return:                      int of the first PID found
+    """
+    if not isinstance(pids_to_exclude, list):
+        raise ValueError(f"'pids_to_exclude' must be 'list', not '{type(pids_to_exclude)}'")
+    for retry in range(1, number_of_retries + 1):
+        logger.info(f"Try '{retry}' of finding PID for application '{app_name}'")
+        tasklist_command = f'tasklist /FI "IMAGENAME eq {app_name}*"'
+        for pid_to_exclude in pids_to_exclude:
+            tasklist_command += f' /FI "PID ne {pid_to_exclude}"'
+        tasklist_output = subprocess.check_output(tasklist_command)
+        # find first number surrounded by whitespaces
+        try:
+            pid = int(re.search(rb"\s+(\d+)\s+", tasklist_output).group(1))
+        except AttributeError:
+            logger.warning("PID not found")
+            time.sleep(wait_before_next_try / 1000)
+            continue
+        logger.info(f"PID found: {pid}")
+        return pid
+    raise RuntimeError(f"Unable to find PID for image name '{app_name}'")
