@@ -11,7 +11,7 @@ utilities for applicatioins such as killing them or clearing cache...
 
 # Examples
 ## Universal utilities for working with files
-```
+```python
 import urpautils
 
 # Remove directory
@@ -31,7 +31,7 @@ urpautils.remove_files_older_than("C:\\path\\to\\dir", 30)
 ```
 
 ## Universal utilities for reading and writing text files
-```
+```python
 import urpautils
 
 # All functions bellow have optional argument 'encoding' which defaults to 'utf-8-sig'
@@ -59,7 +59,7 @@ sequence.delete()
 ```
 
 ## Other universal utilities for working with files
-```
+```python
 import urpautils
 
 # Archivate file
@@ -87,7 +87,7 @@ newly_created_image_path = urpautils.copy_error_img("C:\\path\\to\\destination_d
 ```
 
 ## Universal utilities for working with CSV files
-```
+```python
 import urpautils
 
 # Properties such as encoding, delimeter and newline can be set via optional arguments with corresponding name
@@ -106,7 +106,7 @@ urpautils.csv_read_rows("C:\\path\\to\\file.csv")
 ```
 
 ## Miscellaneous universal utilities
-```
+```python
 import urpautils
 
 # Get timestamp
@@ -147,7 +147,7 @@ pid_3 = urpautils.get_app_pid("chrome.exe", pids_to_exclude=[pid_1, pid_2])
 ```
 
 ## Utilities dependent on the urpa library
-```
+```python
 import urpa
 import urpautils
 
