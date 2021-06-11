@@ -1,5 +1,6 @@
 """Module containing universal functions for file operations that can be used with urpa robots"""
 
+import glob
 import logging
 import os
 import shutil
@@ -8,21 +9,20 @@ import time
 from typing import Optional
 from urpautils.universal import timestamp
 
+import __main__
+
 logger = logging.getLogger(__name__)
 
 
 def remove_dir(path: str) -> None:
-    """Tries to remove a directory
+    """Removes a directory
 
     :param path:    path
     :return:        None
     """
-    try:
-        if os.path.isdir(path):
-            logger.info(f"Removing directory '{path}'")
-            shutil.rmtree(path)
-    except PermissionError:
-        logger.warning(f"Unable to remove direcotry '{path}'")
+    if os.path.isdir(path):
+        logger.info(f"Removing directory '{path}'")
+        shutil.rmtree(path)
 
 
 def remove(path: str) -> None:
@@ -53,10 +53,7 @@ def copy(src: str, dest: str) -> None:
     :param dest:  destination path
     :return: None
     """
-    try:
-        shutil.copyfile(src, dest)
-    except PermissionError:
-        logger.warning(f"Unable to copy '{src}' into '{dest}'")
+    shutil.copyfile(src, dest)
 
 
 def remove_files_older_than(dir_path: str, days: int) -> None:
@@ -79,32 +76,32 @@ def remove_files_older_than(dir_path: str, days: int) -> None:
                 remove(file_path)
 
 
-def write_txt_file(file_name: str, content: str, mode: str = "w") -> None:
+def write_txt_file(file_name: str, content: str, mode: str = "w", encoding: str = "utf-8-sig") -> None:
     """Writes a text file
 
     :param file_name:    path
     :param content:      string to write
     :param mode:         mode of writing (writing, appending, ...)
+    :param encoding:     encoding to use
     :return:             None
     """
-    # maybe TODO: expand this function so it works with all kinds of files, not just text? e.g. binary etc.
     possible_modes = ("w", "a", "w+", "a+")
     if not mode in possible_modes:
-        raise ValueError(f"Invalid write mode '{mode}'. Please use on of the following: '{possible_modes}'")
-    with open(file_name, mode) as txt_file:
+        raise ValueError(f"Invalid write mode '{mode}'. Please use one of the following: '{possible_modes}'")
+    with open(file_name, mode, encoding=encoding) as txt_file:
         txt_file.write(content)
 
 
-def read_txt_file(file_name: str) -> Optional[str]:
+def read_txt_file(file_name: str, encoding: str = "utf-8-sig") -> Optional[str]:
     """Reads a text file
 
     :param file_name:    path
+    :param encoding:     encoding to use
     :return:             str content
     """
-    # maybe TODO: expand this function so it works with all kinds of files, not just text? e.g. binary etc.
     if not os.path.isfile(file_name):
         return None
-    with open(file_name, "r") as txt_file:
+    with open(file_name, "r", encoding=encoding) as txt_file:
         return txt_file.read()
 
 
@@ -159,28 +156,26 @@ class Helper:
         os.remove(self.file_name)
 
 
-def archive_file(
+def archivate_file(
     source_file: str,
     destination_path: str,
-    use_timestamp_prefix: bool = True,
-    timestamp_format: str = "%Y-%m-%d_",
+    prefix_timestamp_format: Optional[str] = None,
     force_rewrite: bool = False,
 ) -> str:
     """Moves 'source_file' to 'destination_path' and if selected adds timestamp prefix to its name
 
-    :param source_file:            path to file
-    :param destination_path:       path to directory
-    :param use_timestamp_prefix:   bool - add timestamp to the file name
-    :param timestamp_format:       format of the timestamp prefix
-    :param force_rewrite:          bool - if destination file already exists it is rewriten if True
-    :return:                       string - path to the new file
+    :param source_file:              path to file
+    :param destination_path:         path to directory
+    :param prefix_timestamp_format:  format of the timestamp prefix. If None no prefix is added
+    :param force_rewrite:            bool - if destination file already exists it is rewriten if True
+    :return:                         string - path to the new file
     """
     if not os.path.isfile(source_file):
         raise FileNotFoundError(f"File '{source_file}' does not exist")
 
     file_name = os.path.basename(source_file)
-    if use_timestamp_prefix:
-        file_name = f"{timestamp(timestamp_format)}{file_name}"
+    prefix = timestamp(prefix_timestamp_format) if prefix_timestamp_format else ""
+    file_name = f"{prefix}{file_name}"
     output_file_path = os.path.join(destination_path, file_name)
 
     if os.path.isfile(output_file_path):
@@ -192,3 +187,49 @@ def archive_file(
             )
 
     move(source_file, output_file_path)
+
+
+def prepare_dir(dir_name: str) -> None:
+    """Creates directory dir_name if it does not exist
+
+    :param dir_name:      path
+    :return:              None
+    """
+    if not os.path.exists(dir_name):
+        logger.info(f"Creating new directory '{dir_name}'.")
+        os.mkdir(dir_name)
+
+
+def copy_error_img(
+    output_dir: str,
+    output_file_name: Optional[str] = None,
+    screenshot_format: str = "png",
+    current_log_dir: str = os.path.join(
+        "log", f"{os.path.basename(__main__.__file__).split('.')[0]}_{timestamp('%Y-%m-%d')}"
+    ),
+    offset: int = 0,
+) -> str:
+    r"""Finds 'screenshot_format' file in the 'current_log_dir' and copies it to 'output_dir'.
+    'offset' is used to determine which file to copy starting from the last
+        offset=0 -> last file, offset=1 -> second last file, ...
+    Files are ordered by their age in descending order. Last file (offset 0) is always the newest one
+
+    :param output_dir:           path
+    :param output_file_name:     optional name of the copied file. Name of the original is used if none provided
+    :param screenshot_format:    png, or bmp
+    :param current_log_dir:      directory containing the screenshots. Defaults to 'log\main_module_name_YYYY-MM-DD'
+    :param offset:               which file to copy, starting from last one
+    :return:                     str path to copied file
+    """
+    # remove dots from screenshot format in case user provided ".png" instead of "png"
+    screenshot_format = screenshot_format.replace(".", "")
+    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"))
+    error_img_path_log = error_imgs[-1 - offset]
+    if not output_file_name:
+        # if no output file name was provided, use name of the original image
+        output_file_name = os.path.basename(error_img_path_log)
+    else:
+        output_file_name += f".{screenshot_format}"
+    error_img_path_output = os.path.join(output_dir, output_file_name)
+    shutil.copyfile(error_img_path_log, error_img_path_output)
+    return error_img_path_output
