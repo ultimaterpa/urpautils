@@ -34,16 +34,16 @@ urpautils.remove_files_older_than("C:\\path\\to\\dir", 30)
 ```python
 import urpautils
 
-# All functions bellow have optional argument 'encoding' which defaults to 'utf-8-sig'
-
 # Write to text file
 urpautils.write_txt_file("C:\\path\\to\\file.txt", "This will be written to the file", mode="w")
 
 # Append to text file
 urpautils.write_txt_file("C:\\path\\to\\file.txt", "This will be appended to the file", mode="a")
 
-# Read text file. Return None if the file does not exist
+# Read text file. Returns None if the file does not exist
 content = read_txt_file("C:\\path\\to\\file.txt")
+
+# All functions above have optional argument 'encoding' which defaults to 'utf-8-sig'
 
 ## Use helper file
 # Initiate. Creates the file if it does not exist and sets its value to 0
@@ -81,7 +81,7 @@ urpautils.prepare_dir("C:\\path\\to\\dir")
 #   'output_file_name': name of the output file. Original name is used if None
 #   'screenshot_format': png or bmp. Defaults to png
 #   'current_log_dir': direcotry with the error screenshots. Defaults to "log\name_of_main_file_RRRR-MM-DD"
-#   'offset': integer saying which file to copy startind from the end (0->last file, 1->second last file, ...)
+#   'offset': integer saying which file to copy starting from the end (0->last file, 1->second last file, ...)
 newly_created_image_path = urpautils.copy_error_img("C:\\path\\to\\destination_directory")
 
 ```
@@ -99,7 +99,7 @@ urpautils.csv_create_file("C:\\path\\to\\file.csv", header=["1st column", "2nd c
 urpautils.csv_append_row("C:\\path\\to\\file.csv", ["foo", "bar"])
 
 # Read rows from CSV file
-#   besides optional arguments such as newline or encoding this function contains two more arguments:
+#   besides optional arguments such as newline or encoding this function has two more arguments:
 #   'start_row_index' and `end_row_index`. All rows are read if not provided
 urpautils.csv_read_rows("C:\\path\\to\\file.csv")
 
