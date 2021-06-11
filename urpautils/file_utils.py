@@ -223,7 +223,7 @@ def copy_error_img(
     """
     # remove dots from screenshot format in case user provided ".png" instead of "png"
     screenshot_format = screenshot_format.replace(".", "")
-    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"))
+    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"), key=os.path.getmtime)
     error_img_path_log = error_imgs[-1 - offset]
     if not output_file_name:
         # if no output file name was provided, use name of the original image
