@@ -1,11 +1,8 @@
 """Module containing universal functions that can be used with urpa robots"""
 
 import datetime
-import glob
 import logging
-import os
 import re
-import shutil
 import smtplib
 import subprocess
 import time
@@ -14,9 +11,7 @@ from email import charset
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Optional
 
-import __main__
 
 logger = logging.getLogger(__name__)
 
@@ -47,17 +42,6 @@ def add_long_path_prefix(path: str) -> str:
     if path[0:2] == "\\\\":
         return f"{network_prefix}{path[2:]}"
     return f"{local_prefix}{path}"
-
-
-def prepare_dir(dir_name: str) -> None:
-    """Creates directory dir_name if it does not exist
-
-    :param dir_name:      path
-    :return:              None
-    """
-    if not os.path.exists(dir_name):
-        logger.info(f"Creating new directory '{dir_name}'.")
-        os.mkdir(dir_name)
 
 
 def kill_app(image_name: str) -> None:
@@ -237,41 +221,6 @@ def clear_ie_cache() -> None:
             "/f",
         )
     )
-
-
-def copy_error_img(
-    output_dir: str,
-    output_file_name: Optional[str] = None,
-    screenshot_format: str = "png",
-    current_log_dir: str = os.path.join(
-        "log", f"{os.path.basename(__main__.__file__).split('.')[0]}_{timestamp('%Y-%m-%d')}"
-    ),
-    offset: int = 0,
-) -> str:
-    r"""Finds 'screenshot_format' file in the 'current_log_dir' and copies it to 'output_dir'.
-    'offset' is used to determine which file to copy starting from the last
-        offset=0 -> last file, offset=1 -> second last file, ...
-    Files are ordered by their age in descending order. Last file (offset 0) is always the newest one
-
-    :param output_dir:           path
-    :param output_file_name:     optional name of the copied file. Name of the original is used if none provided
-    :param screenshot_format:    png, or bmp
-    :param current_log_dir:      directory containing the screenshots. Defaults to 'log\main_module_name_YYYY-MM-DD'
-    :param offset:               which file to copy, starting from last one
-    :return:                     str path to copied file
-    """
-    # remove dots from screenshot format in case user provided ".png" instead of "png"
-    screenshot_format = screenshot_format.replace(".", "")
-    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"))
-    error_img_path_log = error_imgs[-1 - offset]
-    if not output_file_name:
-        # if no output file name was provided, use name of the original image
-        output_file_name = os.path.basename(error_img_path_log)
-    else:
-        output_file_name += f".{screenshot_format}"
-    error_img_path_output = os.path.join(output_dir, output_file_name)
-    shutil.copyfile(error_img_path_log, error_img_path_output)
-    return error_img_path_output
 
 
 def get_app_pid(
