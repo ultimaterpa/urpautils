@@ -5,12 +5,12 @@ Helper module for [UltimateRPA](https://www.ultimaterpa.com) robots
 Contains universal functions usable across all urpa robots
 
 urpautils is split into two main categories:
-- universal ulitities including utilities for working with text or csv files, verifiing BIN or personal identification numbers,
-utilities for applicatioins such as killing them or clearing cache...
+- universal utilities including utilities for working with text or csv files, verifying BIN or personal identification numbers,
+utilities for applications such as killing them or clearing cache...
 - utilities used directly by urpa robot (i.e. they use methods from the urpa library)
 
-# Examples
-## Universal utilities for working with files
+## Universal utilities examples
+### Universal utilities for working with files
 ```python
 import urpautils
 
@@ -30,7 +30,7 @@ urpautils.copy("C:\\path\\to\\source_file.txt", "C:\\path\\to\\destination_file.
 urpautils.remove_files_older_than("C:\\path\\to\\dir", 30)
 ```
 
-## Universal utilities for reading and writing text files
+### Universal utilities for reading and writing text files
 ```python
 import urpautils
 
@@ -58,7 +58,7 @@ incremented_value = sequence.increment()
 sequence.delete()
 ```
 
-## Other universal utilities for working with files
+### Other universal utilities for working with files
 ```python
 import urpautils
 
@@ -86,11 +86,11 @@ newly_created_image_path = urpautils.copy_error_img("C:\\path\\to\\destination_d
 
 ```
 
-## Universal utilities for working with CSV files
+### Universal utilities for working with CSV files
 ```python
 import urpautils
 
-# Properties such as encoding, delimeter and newline can be set via optional arguments with corresponding name
+# Properties such as encoding, delimiter and newline can be set via optional arguments with corresponding name
 
 # Create csv file and write header to it
 urpautils.csv_create_file("C:\\path\\to\\file.csv", header=["1st column", "2nd column"])
@@ -105,7 +105,7 @@ urpautils.csv_read_rows("C:\\path\\to\\file.csv")
 
 ```
 
-## Miscellaneous universal utilities
+### Miscellaneous universal utilities
 ```python
 import urpautils
 
@@ -115,7 +115,7 @@ timestamp = urpautils.timestamp()
 # Modify path to avoid win32api 260 character limit
 modified_path = urpautils.add_long_path_prefix("C:\\very\long\path")
 
-# Kill proccess tree
+# Kill process tree
 urpautils.killapp("image_name")
 
 # Send an email
@@ -128,13 +128,13 @@ urpautils.send_email_notification(
     "SMTP_server.com"
 )
 
-# Verify Personal Identification Number (Rodně číslo)
+# Verify Personal Identification Number (Rodné číslo)
 is_valid = urpautils.verify_rc("990512/1234")
 
 # Verify BIN (IČO)
 is_valid = urpautils.verify_ico("12345678")
 
-# Clear Internet Exporer Cache and disable "customize" window at first run
+# Clear Internet Explorer Cache and disable "customize" window at first run
 urpautils.clear_ie_cache()
 
 # Get PID of an application
@@ -146,7 +146,7 @@ pid_3 = urpautils.get_app_pid("chrome.exe", pids_to_exclude=[pid_1, pid_2])
 
 ```
 
-## Utilities dependent on the urpa library
+## Utilities dependent on the urpa library examples
 ```python
 import urpa
 import urpautils

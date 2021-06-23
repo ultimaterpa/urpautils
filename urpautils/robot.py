@@ -1,3 +1,5 @@
+"""Module containing functions dependent on the urpa library that can be used with urpa robots"""
+
 import logging
 
 from typing import Tuple, Union, Sequence, Optional
@@ -26,7 +28,7 @@ def parallel_search(
             elements = app.find_all(condition, 0)
             if elements:
                 return index, elements
-    raise RuntimeError(f"Parallel_search: No elemets found for the conditions!")
+    raise urpa.ElementNotFoundError("Parallel_search: No elemets found for the conditions!")
 
 
 def check_elements(

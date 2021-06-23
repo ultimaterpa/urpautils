@@ -6,6 +6,7 @@ import re
 import smtplib
 import subprocess
 import time
+from typing import List, Optional
 
 from email import charset
 from email.header import Header
@@ -44,17 +45,18 @@ def add_long_path_prefix(path: str) -> str:
     return f"{local_prefix}{path}"
 
 
-def kill_app(image_name: str) -> None:
+def kill_app(image_name: str, check: bool = False) -> None:
     """Kills app and its tree
 
     :param image_name:      app image name
+    :param check:           check status code of the subprocess.run. Raises Exception if non-zero
     :return:                None
     """
-    subprocess.run(("taskkill", "/F", "/IM", f"{image_name}"))
+    subprocess.run(("taskkill", "/F", "/IM", f"{image_name}"), check=check)
 
 
 def send_email_notification(
-    email_sender: str, recipients: list, recipients_copy: list, subject: str, body: str, smtp_server: str
+    email_sender: str, recipients: List[str], recipients_copy: List[str], subject: str, body: str, smtp_server: str
 ) -> None:
     """Sends an e-mail
 
@@ -170,14 +172,16 @@ def verify_ico(bin: str) -> bool:
     return int(bin[7]) == c
 
 
-def clear_ie_cache() -> None:
+def clear_ie_cache(check: bool = False) -> None:
     r"""Clears Internet Explorer cache and makes registry change so it does not open 'customize' window on first run
     RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255
     reg ADD "HKEY_CURRENT_USER\Software\Policies\Microsoft\Internet Explorer\Main" /v DisableFirstRunCustomize /d 1 /t REG_DWORD /f
     reg ADD "HKEY_CURRENT_USER\Software\Policies\Microsoft\Internet Explorer\Main" /v RunOnceComplete /d 1 /t REG_DWORD /f
     reg ADD "HKEY_CURRENT_USER\Software\Policies\Microsoft\Internet Explorer\Main" /v RunOnceHasShown /d 1 /t REG_DWORD /f
+
+    :param check:    check status code of the subprocess.run. Raises Exception if non-zero
     """
-    subprocess.run(("RunDll32.exe", "InetCpl.cpl,ClearMyTracksByProcess", "255"))
+    subprocess.run(("RunDll32.exe", "InetCpl.cpl,ClearMyTracksByProcess", "255"), check=check)
     time.sleep(5)
     subprocess.run(
         (
@@ -191,7 +195,8 @@ def clear_ie_cache() -> None:
             "/t",
             "REG_DWORD",
             "/f",
-        )
+        ),
+        check=check,
     )
     subprocess.run(
         (
@@ -205,7 +210,8 @@ def clear_ie_cache() -> None:
             "/t",
             "REG_DWORD",
             "/f",
-        )
+        ),
+        check=check,
     )
     subprocess.run(
         (
@@ -219,12 +225,16 @@ def clear_ie_cache() -> None:
             "/t",
             "REG_DWORD",
             "/f",
-        )
+        ),
+        check=check,
     )
 
 
 def get_app_pid(
-    app_name: str, pids_to_exclude: list = [], number_of_retries: int = 3, wait_before_next_try: int = 10000
+    app_name: str,
+    pids_to_exclude: List[Optional[int]] = [],
+    number_of_retries: int = 3,
+    wait_before_next_try: int = 10000,
 ) -> int:
     """Finds all PIDs of an 'app_name' application and returns first one
 

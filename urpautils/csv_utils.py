@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def csv_append_row(
-    file_path: str, row: Iterable, newline: str = "", encoding: str = "utf-8-sig", delimiter: str = ";"
+    file_path: str, row: Iterable, newline: str = "", encoding: str = "utf-8", delimiter: str = ";"
 ) -> None:
     """Appends a row to an existing csv file.
 
@@ -34,7 +34,7 @@ def csv_create_file(
     file_path: str,
     header: Optional[Iterable] = None,
     newline: str = "",
-    encoding: str = "utf-8-sig",
+    encoding: str = "utf-8",
     delimiter: str = ";",
 ) -> None:
     """Creates new csv file and writes its header if provided
@@ -49,11 +49,9 @@ def csv_create_file(
     if os.path.isfile(file_path):
         raise FileExistsError(f"File '{file_path}' already exists")
     if header:
-        try:
-            iter(header)
-        except TypeError as err:
-            logger.error(f"'header' must be an iterable, not '{type(header)}'")
-            raise err
+        # raises TypeError if 'header' is not iterable
+        iter(header)
+
     with open(file_path, "w", newline=newline, encoding=encoding) as csv_file:
         if header:
             csv_writer = csv.writer(csv_file, delimiter=delimiter)
@@ -65,7 +63,7 @@ def csv_read_rows(
     start_row_index: int = 0,
     end_row_index: int = sys.maxsize,
     newline: str = "",
-    encoding: str = "utf-8-sig",
+    encoding: str = "utf-8",
     delimiter: str = ";",
 ) -> Generator[list, None, None]:
     """Generates rows of a csv file.

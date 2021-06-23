@@ -76,7 +76,7 @@ def remove_files_older_than(dir_path: str, days: int) -> None:
                 remove(file_path)
 
 
-def write_txt_file(file_name: str, content: str, mode: str = "w", encoding: str = "utf-8-sig") -> None:
+def write_txt_file(file_name: str, content: str, mode: str = "w", encoding: str = "utf-8") -> None:
     """Writes a text file
 
     :param file_name:    path
@@ -92,15 +92,13 @@ def write_txt_file(file_name: str, content: str, mode: str = "w", encoding: str 
         txt_file.write(content)
 
 
-def read_txt_file(file_name: str, encoding: str = "utf-8-sig") -> Optional[str]:
+def read_txt_file(file_name: str, encoding: str = "utf-8") -> str:
     """Reads a text file
 
     :param file_name:    path
     :param encoding:     encoding to use
     :return:             str content
     """
-    if not os.path.isfile(file_name):
-        return None
     with open(file_name, "r", encoding=encoding) as txt_file:
         return txt_file.read()
 
