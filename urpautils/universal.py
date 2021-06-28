@@ -96,7 +96,7 @@ def get_birth_date(number: str) -> datetime.date:
     :return:         datetime.date object (or raises ValueError)
     """
     if not len(number) in (9, 10):
-        raise ValueError("Invalid lengh")
+        raise ValueError("Invalid length")
     year = 1900 + int(number[0:2])
     # females have 50 added to the month value, 20 is added when the serial
     # overflows (since 2004)
