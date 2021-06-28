@@ -89,8 +89,14 @@ def send_email_notification(
     logger.info("E-mail sent")
 
 
-def _get_birth_date(number: str) -> datetime.date:
-    """Helper function for the verify_rc() function"""
+def get_birth_date(number: str) -> datetime.date:
+    """Returns birth date calculated from personal identification number
+    
+    :param number:   string in format xxxxxxxxxx
+    :return:         datetime.date object (or raises ValueError)
+    """
+    if not len(number) in (9, 10):
+        raise ValueError("Invalid lengh")
     year = 1900 + int(number[0:2])
     # females have 50 added to the month value, 20 is added when the serial
     # overflows (since 2004)
@@ -127,7 +133,7 @@ def verify_rc(number: str) -> bool:
     if len(number) not in (9, 10):
         return False
     try:
-        birth_date = _get_birth_date(number)
+        birth_date = get_birth_date(number)
     except ValueError as err:
         logger.debug(f"RC '{number}' not valid, could not verify birth date: '{str(err)}'")
         return False
