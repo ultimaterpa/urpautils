@@ -56,7 +56,13 @@ def kill_app(image_name: str, check: bool = False) -> None:
 
 
 def send_email_notification(
-    email_sender: str, recipients: List[str], recipients_copy: List[str], subject: str, body: str, smtp_server: str
+    email_sender: str,
+    recipients: List[str],
+    recipients_copy: List[str],
+    subject: str,
+    body: str,
+    smtp_server: str,
+    smtp_port: int = 0,
 ) -> None:
     """Sends an e-mail
 
@@ -66,6 +72,7 @@ def send_email_notification(
     :param subject:         subject of the e-mail
     :param body:            body of the e-mail
     :param smtp_server:     smtp server
+    :param smtp_port:       optional port for the smtp server. smtplib.SMTP_PORT (=25) is used if not provided
     :return:                None
     """
     charset.add_charset("utf-8", charset.QP, charset.QP, "utf-8")
@@ -82,7 +89,7 @@ def send_email_notification(
     mail.attach(html_message)
     logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
     logger.debug(f"Subject: '{subject}', body: '{body}'")
-    sender = smtplib.SMTP(smtp_server)
+    sender = smtplib.SMTP(smtp_server, smtp_port)
     sender.set_debuglevel(1)
     sender.sendmail(email_sender, recipients + recipients_copy, mail.as_string())
     sender.quit()
@@ -91,7 +98,7 @@ def send_email_notification(
 
 def get_birth_date(number: str) -> datetime.date:
     """Returns birth date calculated from personal identification number
-    
+
     :param number:   string in format xxxxxxxxxx
     :return:         datetime.date object (or raises ValueError)
     """

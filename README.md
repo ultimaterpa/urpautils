@@ -119,13 +119,15 @@ modified_path = urpautils.add_long_path_prefix("C:\\very\long\path")
 urpautils.killapp("image_name")
 
 # Send an email
+# port is an optional argument. smtplib.SMTP_PORT (=25) is used if not provided
 urpautils.send_email_notification(
     "sender@stringdata.cz",
     ["recipient1@gmail.com", "recipient2@gmail.com"],
     ["recipient_copy1@gmail.com", "recipient_copy2@gmail.com"],
     "This is a subject",
     "This is the email body",
-    "SMTP_server.com"
+    "SMTP_server.com",
+    port = 1234
 )
 
 # Verify Personal Identification Number (Rodné číslo)
