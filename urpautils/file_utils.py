@@ -142,6 +142,9 @@ class Helper:
         :param increment:    how much to increment by
         :return:             number after incrementing
         """
+        if not isinstance(increment, int):
+            logger.error(f"Value '{increment}' is not an integer")
+            raise ValueError(f"Value '{increment}' is not an integer")
         new_value = self.get() + increment
         self.write(new_value)
         return new_value
