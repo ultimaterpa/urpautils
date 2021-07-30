@@ -77,6 +77,6 @@ def robot_setup(
     try:
         urpa.check_screen_resolution(screen_resolution[0], screen_resolution[1], screen_resolution[2])
     except ValueError:
-        urpa.set_screen_resolutionscreen_resolution[0], screen_resolution[1], screen_resolution[2])
+        urpa.set_screen_resolution([0], screen_resolution[1], screen_resolution[2])
     urpa.default.screenshot_format = default_screenshot_format
     urpa.set_debug_mode(debug_mode)
