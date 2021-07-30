@@ -166,7 +166,7 @@ def verify_ico(bin: str) -> bool:
         if not bin.isnumeric() or len(bin) > 8:
             return False
         # pad with zeros from left to length 8 (123456 -> 00123456)
-        bin.rjust(8, "0")
+        bin = bin.rjust(8, "0")
     else:
         raise ValueError(f"'BIN' must be an instance of 'str', not '{type(bin)}'")
 
