@@ -5,10 +5,8 @@ import sys
 
 import pytest
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../")
-from urpautils import csv_utils
-
-urpa = pytest.importorskip("urpa")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../urpautils")
+import csv_utils
 
 
 def test_csv_file(tmpdir):
