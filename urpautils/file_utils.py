@@ -106,7 +106,7 @@ def read_txt_file(file_name: str, encoding: str = "utf-8") -> str:
 class Helper:
     """Class for reading and writing helper text files"""
 
-    def __init__(self, file_name: str, init_value: int = 0) -> None:
+    def __init__(self, file_name: str, init_value: int=0) -> None:
         """Init. Creates file if it does not exist
 
         :param file_name:      file name
