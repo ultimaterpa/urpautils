@@ -54,9 +54,9 @@ def check_elements(
 
 def robot_setup(
     screen_resolution: Tuple[int, int, int],
-    default_timeout: Optional[int]=None,
-    default_screenshot_format: str="png",
-    debug_mode: bool=False
+    default_timeout: Optional[int] = None,
+    default_screenshot_format: str = "png",
+    debug_mode: bool = False,
 ) -> None:
     """Initiates urpa robot
 
