@@ -9,6 +9,8 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../")
 from urpautils import file_utils, universal
 
+urpa = pytest.importorskip("urpa")
+
 
 def test_prepare_and_remove_dir(tmpdir):
     """Test for creating and removing a directory"""
