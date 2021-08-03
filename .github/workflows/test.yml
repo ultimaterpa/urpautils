@@ -39,4 +39,4 @@ jobs:
         pytest
     - name: Check with mypy
       run: |
-        mypy urpautils
+        mypy urpautils --disable-error-code import
