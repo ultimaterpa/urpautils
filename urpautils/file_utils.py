@@ -192,6 +192,7 @@ def archivate_file(
             )
 
     move(source_file, output_file_path)
+    return output_file_path
 
 
 def prepare_dir(dir_name: str) -> None:
