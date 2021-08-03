@@ -83,8 +83,8 @@ def send_email_notification(
     mail["Cc"] = ", ".join(recipients_copy)
     text = body
     html = "<html><body>" + body + "</body></html>"
-    txt_message = MIMEText(text.encode("utf-8"), "plain", "utf-8") # type: ignore
-    html_message = MIMEText(html.encode("utf-8"), "html", "utf-8") # type: ignore
+    txt_message = MIMEText(text.encode("utf-8"), "plain", "utf-8")  # type: ignore
+    html_message = MIMEText(html.encode("utf-8"), "html", "utf-8")  # type: ignore
     mail.attach(txt_message)
     mail.attach(html_message)
     logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
@@ -267,7 +267,7 @@ def get_app_pid(
         tasklist_output = subprocess.check_output(tasklist_command)
         # find first number surrounded by whitespaces
         try:
-            pid = int(re.search(rb"\s+(\d+)\s+", tasklist_output).group(1)) # type: ignore
+            pid = int(re.search(rb"\s+(\d+)\s+", tasklist_output).group(1))  # type: ignore
         except AttributeError:
             logger.warning("PID not found")
             time.sleep(wait_before_next_try / 1000)
