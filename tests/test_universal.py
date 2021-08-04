@@ -38,6 +38,7 @@ class Test_kill_app:
     Should it be? Maybe something like: start demo app -> kill it -> assert proccess not existing
     """
 
+    @pytest.mark.skip(reason="might be implemented in the future")
     def test_kill_app(self):
         pass
 
@@ -47,6 +48,7 @@ class Test_email:
     There is really no test to run here other than send the email to myself and check it that way
     """
 
+    @pytest.mark.skip(reason="no way of testing this")
     def test_send_email(self):
         pass
 
@@ -96,19 +98,18 @@ class Test_verify_ico:
             universal.verify_ico(123)
 
 
-class Test_clear_ie_cache:
+@pytest.mark.skip(reason="no way of testing this")
+def test_clear_ie_cache(self):
     """Not implemented
     There is really no test to run here.
     Besides, we don't want the user to clear their IE cache just by running these tests
     """
-
-    def test_clear_ie_cache(self):
-        pass
+    pass
 
 
-class Test_get_app_pid:
+@pytest.mark.skip(reason="might be implemented in the future")
+def test_get_app_pid():
     """Not implemented
     Should it be? maybe by starting some demo app and finding its PID
     """
-
     pass
