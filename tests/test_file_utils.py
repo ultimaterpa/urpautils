@@ -1,15 +1,11 @@
 """Unit tests for all functions in file_utils.py file"""
 
 import os
-import sys
 import time
 
 import pytest
 
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../")
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../urpautils")
-import file_utils, universal
+from urpautils import file_utils, universal
 
 
 def test_prepare_and_remove_dir(tmpdir):

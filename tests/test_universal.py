@@ -2,14 +2,11 @@
 
 
 import datetime
-import sys
-import os
 
 import pytest
 from freezegun import freeze_time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../urpautils")
-import universal
+from urpautils import universal
 
 
 @freeze_time("2012-01-14")

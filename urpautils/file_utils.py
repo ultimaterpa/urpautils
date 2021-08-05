@@ -9,9 +9,7 @@ import sys
 
 from typing import Optional
 
-# import like this so the unit tests will not complain about missind module 'urpa'
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/urpautils")
-from universal import timestamp
+from .universal import timestamp
 
 import __main__
 
