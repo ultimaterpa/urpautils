@@ -2,7 +2,7 @@ import pathlib
 from setuptools import setup
 
 here = pathlib.Path(__file__).parent
-readme = (here / "README.md").read_text()
+readme = (here / "README.md").read_text(encoding="utf-8")
 
 about = {}
 with open(here / "urpautils" / "__about__.py") as f:

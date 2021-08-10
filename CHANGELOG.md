@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.2] 2021-08-10
+
+### Changed
+- utf-8 encoding for README in setup.py
+
 ## [0.1.1] 2021-08-04
 
 ### Added
