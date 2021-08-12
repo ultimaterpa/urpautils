@@ -275,7 +275,7 @@ def copy_error_img(
     :return:                     str path to copied file
     """
     if not current_log_dir:
-        current_log_dir = f"{_get_main_file_name()}_{timestamp('%Y-%m-%d')}"
+        current_log_dir = os.path.join("log", f"{_get_main_file_name()}_{timestamp('%Y-%m-%d')}")
     # remove dots from screenshot format in case user provided ".png" instead of "png"
     screenshot_format = screenshot_format.replace(".", "")
     error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"), key=os.path.getmtime)
