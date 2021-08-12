@@ -5,7 +5,7 @@ import logging
 import os
 import shutil
 import time
-import sys
+import traceback
 
 from typing import Optional
 
@@ -204,13 +204,62 @@ def prepare_dir(dir_name: str) -> None:
         os.mkdir(dir_name)
 
 
+# TODO remove this.  _get_main_file_name() with the stack trace seems to work fine
+# def _get_main_file_name() -> str:
+#     """Parses all files in current working directory and returns name of file that contains function 'main'
+#     approach via __main__.__file__ does not work because urpa robot loads files dynamicaly so file __main__
+#     has no attribude __file__
+
+#     # TODO ignore lines that are commented out
+#     # TODO 2: write tests for this
+
+#     :return:       basename of the main file
+#     """
+#     main_file = None
+#     all_files = os.listdir()
+#     py_files = [file for file in all_files if ".py" in file]
+#     for file_name in py_files:
+#         try:
+#             with open(file_name, "r", encoding="utf-8") as file:
+#                 content = file.read()
+#         except PermissionError:
+#             continue
+#         if "def main()" in content:
+#             if not main_file:
+#                 main_file = os.path.splitext(file_name)[0]
+#             else:
+#                 raise RuntimeError(
+#                     "More than one .py file contains function 'main()'. Please specify 'current_log_dir' arg manually"
+#                 )
+#     if not main_file:
+#         raise RuntimeError(
+#             "No .py file containing function 'main()' found. Please specify 'current_log_dir' arg manually"
+#         )
+#     return main_file
+
+
+def _get_main_file_name() -> str:
+    """Gets name of the main file from stack trace
+
+    :return:    basename of the main file without an extension
+    """
+    for line in traceback.format_stack():
+        if "File" in line and ".py" in line:
+            # first line that contains 'File' and '.py' is the main file
+            # e.g. 'File "c:\path\to\file.py", line 12, in <module>'
+            break
+    # parse only the path part from the string
+    indexes_of_file_path = [i for i, x in enumerate(line) if x == '"']
+    main_file_path = line[indexes_of_file_path[0] + 1 : indexes_of_file_path[1]]
+    main_file_name = os.path.basename(main_file_path)
+    return os.path.splitext(main_file_name)[0]
+
+
 def copy_error_img(
     output_dir: str,
     output_file_name: Optional[str] = None,
     screenshot_format: str = "png",
-    current_log_dir: str = os.path.join(
-        "log", f"{os.path.basename(__main__.__file__).split('.')[0]}_{timestamp('%Y-%m-%d')}"
-    ),
+    current_log_dir: str = "",
     offset: int = 0,
 ) -> str:
     r"""Finds 'screenshot_format' file in the 'current_log_dir' and copies it to 'output_dir'.
@@ -225,6 +274,8 @@ def copy_error_img(
     :param offset:               which file to copy, starting from last one
     :return:                     str path to copied file
     """
+    if not current_log_dir:
+        current_log_dir = f"{_get_main_file_name()}_{timestamp('%Y-%m-%d')}"
     # remove dots from screenshot format in case user provided ".png" instead of "png"
     screenshot_format = screenshot_format.replace(".", "")
     error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"), key=os.path.getmtime)

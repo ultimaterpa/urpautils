@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3] 2021-08-12
+### Changed
+- `copy_error_image` now reads main file name from stack trace
+
+### Fixed
+- setting screen resolution in `robot_setup` function
+
 ## [0.1.2] 2021-08-10
 
 ### Changed
