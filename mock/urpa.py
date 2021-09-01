@@ -11,3 +11,7 @@ class App:
 
 class Condition:
     pass
+
+
+class AppElement:
+    pass
