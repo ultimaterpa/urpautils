@@ -123,9 +123,7 @@ def save_as(
     from urpaform import Form, EditElement
 
     if open_save_as_window and app_elem is None:
-        raise RuntimeError(
-            "Please specify an app element on which to open the Save As window"
-        )
+        raise RuntimeError("Please specify an app element on which to open the Save As window")
 
     elem_names = {
         "en_US": {
@@ -143,9 +141,7 @@ def save_as(
             "yes_button_name": "Ano",
         },
     }
-    system_language = locale.windows_locale[
-        ctypes.windll.kernel32.GetUserDefaultUILanguage()
-    ]
+    system_language = locale.windows_locale[ctypes.windll.kernel32.GetUserDefaultUILanguage()]
     if not system_language in elem_names.keys() and (
         not save_as_window_name
         or not file_name_elem_name
@@ -158,43 +154,28 @@ def save_as(
                     Please specify names for these elements manually: '{elem_names['en_US'].keys()}'"""
         )
 
-    save_as_window_name = (
-        save_as_window_name or elem_names[system_language]["save_as_window_name"]
-    )
-    file_name_elem_name = (
-        file_name_elem_name or elem_names[system_language]["file_name_elem_name"]
-    )
-    save_button_name = (
-        save_button_name or elem_names[system_language]["save_button_name"]
-    )
+    save_as_window_name = save_as_window_name or elem_names[system_language]["save_as_window_name"]
+    file_name_elem_name = file_name_elem_name or elem_names[system_language]["file_name_elem_name"]
+    save_button_name = save_button_name or elem_names[system_language]["save_button_name"]
     confirm_rewrite_window_name = (
-        confirm_rewrite_window_name
-        or elem_names[system_language]["confirm_rewrite_window_name"]
+        confirm_rewrite_window_name or elem_names[system_language]["confirm_rewrite_window_name"]
     )
     yes_button_name = yes_button_name or elem_names[system_language]["yes_button_name"]
 
     if open_save_as_window:
         app_elem.send_key(open_save_as_window_shortcut)  # type: ignore
     save_as_window = urpa.find_first_app(save_as_window_name, timeout=timeout)
-    file_name_field = EditElement(
-        save_as_window.find_first(cf.name(file_name_elem_name).edit(), timeout=timeout)
-    )
+    file_name_field = EditElement(save_as_window.find_first(cf.name(file_name_elem_name).edit(), timeout=timeout))
     with Form("Save As file name") as form:
         form.add(file_name_field, file_name)
-    save_as_window.find_first(
-        cf.name(save_button_name).button(), timeout=timeout
-    ).send_mouse_click()
+    save_as_window.find_first(cf.name(save_button_name).button(), timeout=timeout).send_mouse_click()
     try:
-        confirm_save_as_window = urpa.find_first_app(
-            confirm_rewrite_window_name, timeout=timeout
-        )
+        confirm_save_as_window = urpa.find_first_app(confirm_rewrite_window_name, timeout=timeout)
     except urpa.ElementNotFoundError:
         pass
     else:
         if force_rewrite:
-            confirm_save_as_window.find_first(
-                cf.name(yes_button_name).button(), timeout=timeout
-            ).send_mouse_click()
+            confirm_save_as_window.find_first(cf.name(yes_button_name).button(), timeout=timeout).send_mouse_click()
         else:
             raise FileExistsError(
                 f"File '{file_name}' already exists. If you want to rewrite it set 'force_rewrite' arg to 'True'"
@@ -231,9 +212,7 @@ def open_file(
     from urpaform import Form, EditElement
 
     if open_open_file_window and app_elem is None:
-        raise RuntimeError(
-            "Please specify an app element on which to open the Open File window"
-        )
+        raise RuntimeError("Please specify an app element on which to open the Open File window")
 
     elem_names = {
         "en_US": {
@@ -248,9 +227,7 @@ def open_file(
         },
     }
 
-    system_language = locale.windows_locale[
-        ctypes.windll.kernel32.GetUserDefaultUILanguage()
-    ]
+    system_language = locale.windows_locale[ctypes.windll.kernel32.GetUserDefaultUILanguage()]
     if not system_language in elem_names.keys() and (
         not open_file_window_name or not file_name_elem_name or not open_button_name
     ):
@@ -258,25 +235,15 @@ def open_file(
             f"""Unsupported system language: '{system_language}'
                     Please specify names for these elements manually: '{elem_names['en_US'].keys()}'"""
         )
-    open_file_window_name = (
-        open_file_window_name or elem_names[system_language]["open_file_window_name"]
-    )
-    file_name_elem_name = (
-        file_name_elem_name or elem_names[system_language]["file_name_elem_name"]
-    )
-    open_button_name = (
-        open_button_name or elem_names[system_language]["open_button_name"]
-    )
+    open_file_window_name = open_file_window_name or elem_names[system_language]["open_file_window_name"]
+    file_name_elem_name = file_name_elem_name or elem_names[system_language]["file_name_elem_name"]
+    open_button_name = open_button_name or elem_names[system_language]["open_button_name"]
 
     if open_open_file_window:
         app_elem.send_key(open_open_file_window_shortcut)  # type: ignore
 
     open_file_window = urpa.find_first_app(open_file_window_name, timeout=timeout)
-    file_name_field = EditElement(
-        open_file_window.find_first(
-            cf.name(file_name_elem_name).edit(), timeout=timeout
-        )
-    )
+    file_name_field = EditElement(open_file_window.find_first(cf.name(file_name_elem_name).edit(), timeout=timeout))
     with Form("Open File name") as form:
         form.add(file_name_field, file_name)
     open_file_window.find_first(
