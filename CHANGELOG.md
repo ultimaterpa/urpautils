@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0] 2021-08-31
+### Added
+- #5 : `save_as` function for working with Windows Save As dialogue
+- #5 : `open_file` function for working with Windows Open dialogue
+- #6 : `get_previous_work_day_date` function for getting date of previous work day
+
 ## [0.1.3] 2021-08-12
 ### Changed
 - `copy_error_image` now reads main file name from stack trace

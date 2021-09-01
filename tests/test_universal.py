@@ -110,3 +110,24 @@ def test_get_app_pid():
     Should it be? maybe by starting some demo app and finding its PID
     """
     pass
+
+
+@pytest.mark.parametrize(
+    "today,expected",
+    [
+        (datetime.date(2021, 9, 2), datetime.date(2021, 9, 1)),
+        (datetime.date(2021, 9, 1), datetime.date(2021, 8, 31)),
+        (datetime.date(2021, 8, 30), datetime.date(2021, 8, 27)),
+        (datetime.date(2021, 9, 29), datetime.date(2021, 9, 27)),
+        (datetime.date(2021, 12, 27), datetime.date(2021, 12, 23)),
+        (datetime.date(2021, 1, 4), datetime.date(2020, 12, 31)),
+    ],
+)
+def test_get_previous_work_day_date(today, expected):
+    """Test correct date of previous work day"""
+    # CZ is default country
+    assert universal.get_previous_work_day_date(today) == expected
+    # try some other country
+    assert universal.get_previous_work_day_date(datetime.date(2021, 9, 2), "US") == datetime.date(2021, 9, 1)
+    # independence day yeeehaw
+    assert universal.get_previous_work_day_date(datetime.date(2018, 7, 5), "US") == datetime.date(2018, 7, 3)

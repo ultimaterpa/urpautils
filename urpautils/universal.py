@@ -12,6 +12,7 @@ from email import charset
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import holidays
 
 
 logger = logging.getLogger(__name__)
@@ -275,3 +276,20 @@ def get_app_pid(
         logger.info(f"PID found: {pid}")
         return pid
     raise RuntimeError(f"Unable to find PID for image name '{app_name}'")
+
+
+def get_previous_work_day_date(today: datetime.date = datetime.date.today(), country: str = "CZ") -> datetime.date:
+    """Returns previous work day based on value 'today'
+
+    :param today:      date to use as reference
+    :param country:    code of country to fetch list of holidays for
+    :return:           datetime.date
+    """
+    holiday_days = getattr(holidays, country)()
+    for offset in range(1, 366):
+        # loop till a working day is found
+        previous_day = today - datetime.timedelta(offset)
+        # weekdays 5 and 6 are saturday and sunday
+        if not previous_day in holiday_days and not previous_day.weekday() in (5, 6):
+            return previous_day
+    raise RuntimeError("No previous working day found")

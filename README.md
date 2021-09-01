@@ -148,6 +148,10 @@ pid_2 = urpautils.get_app_pid("chrome.exe", pids_to_exclude=[pid_1])
 # Get PID of yet another instance of the same application
 pid_3 = urpautils.get_app_pid("chrome.exe", pids_to_exclude=[pid_1, pid_2])
 
+# Get previous work day date. By default it uses today as reference and Czech holidays
+previous_work_day_date = get_previous_work_day_date()
+# You can specify day to use as reference as well as other countries' holidays
+previous_work_day_date = get_previous_work_day_date(today=datetime.date(2021, 9, 2), country="US")
 ```
 
 ## Utilities dependent on the urpa library examples
@@ -166,4 +170,23 @@ index, elements = urpautils.parallel_search(urpa.App, cf.window(), cf.button())
 # Find control elements
 urpautils.check_elements(urpa.App, cf.window(), cf.button())
 
+# Save file as
+# by default it assumes Save As window is already opened
+urpautils.save_as("file.txt")
+# you can instruct the function to open the window for you
+# in that case you need to provide an App element on which to open the window
+urpautils.save_as("file.txt", open_save_as_window=True, app_elem=some_app_elem)
+# you might need to specify the shortcut for opening Save As window aswell (defaults to CTRL+SHIT+S)
+urpautils.save_as("file.txt", open_save_as_window=True, app_elem=some_app_elem, open_save_as_window_shortcut="ALT+S")
+# by default it uses most common element names based on your system language (i.e. window name "Save As" for ENG and "Uložit jako" for CZE). In some cases theese can be different
+urpautils.save_as("file.txt", save_as_window_name="Save file as...")
+# If the file already exists you can choose to rewrite it
+urpautils.save_as("file.txt", force_rewrite=True)
+
+# Open file
+# similar to Save As, this opens a file. By default it assumes Open window is already opened
+urpautils.open_file("file.txt")
+# you can instruct the function to open the window for you
+urpautils.save_as("file.txt", open_open_file_window=True, app_elem=some_app_elem)
+# specifying shortcut and element names is same as with `save_as` function
 ```

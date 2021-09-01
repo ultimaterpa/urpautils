@@ -21,6 +21,7 @@ setup(
     keywords="Robotic Process Automation, RPA, UltimateRPA, utilities",
     packages_data={"urpautils": ["py.typed"]},
     packages=["urpautils"],
+    install_requires=["urpatimeout", "holidays"],
     python_requires=">=3.7",
     classifiers=[
         "Intended Audience :: Developers",
