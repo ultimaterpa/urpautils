@@ -4,7 +4,7 @@ import ctypes
 import locale
 import logging
 
-from typing import Tuple, Union, Sequence, Optional, List
+from typing import Tuple, Union, Sequence, Optional, List, Callable
 
 import urpa
 import urpatimeout
@@ -264,7 +264,7 @@ def failed_login_notification(
     smtp_port: int = 0,
     screenshot_format: str = "png",
     current_log_dir: str = "",
-) -> None:
+) -> Callable:
     """Decorator function. If exception is raised in decorated function it sends an email with a screenshot.
 
     :param email_sender:      sender of this e-mail
