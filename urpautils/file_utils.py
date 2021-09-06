@@ -255,6 +255,22 @@ def _get_main_file_name() -> str:
     return os.path.splitext(main_file_name)[0]
 
 
+def _get_error_screenshot_path(screenshot_format, current_log_dir, offset) -> str:
+    """Gets path of latest+offset image in current_log_dir
+
+    :param screenshot_format:    png, or bmp
+    :param current_log_dir:      directory containing the screenshots
+    :param offset:               which file to copy, starting from last one
+    :return:                     str path to file
+    """
+    if not current_log_dir:
+        current_log_dir = os.path.join("log", f"{_get_main_file_name()}_{timestamp('%Y-%m-%d')}")
+    # remove dots from screenshot format in case user provided ".png" instead of "png"
+    screenshot_format = screenshot_format.replace(".", "")
+    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"), key=os.path.getmtime)
+    return error_imgs[-1 - offset]
+
+
 def copy_error_img(
     output_dir: str,
     output_file_name: Optional[str] = None,
@@ -274,12 +290,7 @@ def copy_error_img(
     :param offset:               which file to copy, starting from last one
     :return:                     str path to copied file
     """
-    if not current_log_dir:
-        current_log_dir = os.path.join("log", f"{_get_main_file_name()}_{timestamp('%Y-%m-%d')}")
-    # remove dots from screenshot format in case user provided ".png" instead of "png"
-    screenshot_format = screenshot_format.replace(".", "")
-    error_imgs = sorted(glob.glob(f"{current_log_dir}\\*.{screenshot_format}"), key=os.path.getmtime)
-    error_img_path_log = error_imgs[-1 - offset]
+    error_img_path_log = _get_error_screenshot_path(screenshot_format, current_log_dir, offset)
     if not output_file_name:
         # if no output file name was provided, use name of the original image
         output_file_name = os.path.basename(error_img_path_log)

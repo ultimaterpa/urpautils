@@ -122,6 +122,7 @@ urpautils.killapp("image_name")
 
 # Send an email
 # port is an optional argument. smtplib.SMTP_PORT (=25) is used if not provided
+# attachments is an optional argument
 urpautils.send_email_notification(
     "sender@stringdata.cz",
     ["recipient1@gmail.com", "recipient2@gmail.com"],
@@ -129,7 +130,8 @@ urpautils.send_email_notification(
     "This is a subject",
     "This is the email body",
     "SMTP_server.com",
-    port = 1234
+    smtp_port = 1234,
+    attachments = ["path/to/file1.jpg", "path/to/file2.jpg"]
 )
 
 # Verify Personal Identification Number (Rodné číslo)
@@ -189,4 +191,18 @@ urpautils.open_file("file.txt")
 # you can instruct the function to open the window for you
 urpautils.save_as("file.txt", open_open_file_window=True, app_elem=some_app_elem)
 # specifying shortcut and element names is same as with `save_as` function
+
+# Decorate a function to send an email with error screenshot if an Exception is raised
+# Decorator function has optional arguments smtp_port (default 25), screenshot_format (default "png"), current_log_dir (default "log\name_of_main_file_RRRR-MM-DD")
+@urpautils.failed_login_notification(
+    "sender@stringdata.cz",
+    ["receiver@stringdata.cz"],
+    ["receiver_copy@stringdata.cz"],
+    "subject",
+    "body",
+    "smtp_server.cz"
+)
+def my_decorated_function():
+    # before SomeError is raised the email is sent
+    raise SomeError
 ```

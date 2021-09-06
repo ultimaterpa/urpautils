@@ -4,10 +4,13 @@ import ctypes
 import locale
 import logging
 
-from typing import Tuple, Union, Sequence, Optional
+from typing import Tuple, Union, Sequence, Optional, List
 
 import urpa
 import urpatimeout
+
+from .file_utils import _get_error_screenshot_path
+from .universal import send_email_notification
 
 
 cf = urpa.condition_factory()
@@ -249,3 +252,43 @@ def open_file(
     open_file_window.find_first(
         cf.name(open_button_name).class_name("Button").button(), timeout=timeout
     ).send_mouse_click()
+
+
+def failed_login_notification(
+    email_sender: str,
+    recipients: List[str],
+    recipients_copy: List[str],
+    subject: str,
+    body: str,
+    smtp_server: str,
+    smtp_port: int = 0,
+    screenshot_format: str = "png",
+    current_log_dir: str = "",
+) -> None:
+    """Decorator function. If exception is raised in decorated function it sends an email with a screenshot.
+
+    :param email_sender:      sender of this e-mail
+    :param recipients:        list of addresses of recipients
+    :param recipients_copy:   list of addresses of recipients of a copy
+    :param subject:           subject of the e-mail
+    :param body:              body of the e-mail
+    :param smtp_server:       smtp server
+    :param smtp_port:         optional port for the smtp server. smtplib.SMTP_PORT (=25) is used if not provided
+    :param screenshot_format: format of screenshot taken
+    :param current_log_dir:   directory containing the screenshot. Defaults to 'log\main_module_name_YYYY-MM-DD'
+    :return:                  None
+    """
+
+    def inner(func):
+        try:
+            func()
+        except Exception as err:
+            urpa.default.screenshot_format = screenshot_format
+            urpa.take_screenshot()
+            screenshot_path = _get_error_screenshot_path(screenshot_format, current_log_dir, 0)
+            send_email_notification(
+                email_sender, recipients, recipients_copy, subject, body, smtp_server, smtp_port, [screenshot_path]
+            )
+            raise err
+
+    return inner

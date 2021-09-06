@@ -1,4 +1,11 @@
 # Changelog
+## [0.3.0] 2021-09-06
+### Added
+- Optional arg `attachments` to `send_email_notification` function
+- [#4](https://github.com/ultimaterpa/urpautils/issues/4) : Decorator function `failed_login_notification` for sending an email notification with error screenshot
+
+### Changed
+- Finding the path of an error screenshot is now done via private function `_get_error_screenshot_path`
 
 ## [0.2.0] 2021-08-31
 ### Added

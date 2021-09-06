@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import os
 import re
 import smtplib
 import subprocess
@@ -10,6 +11,7 @@ from typing import List, Optional
 
 from email import charset
 from email.header import Header
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import holidays
@@ -64,6 +66,7 @@ def send_email_notification(
     body: str,
     smtp_server: str,
     smtp_port: int = 0,
+    attachments: List[str] = [],
 ) -> None:
     """Sends an e-mail
 
@@ -74,6 +77,7 @@ def send_email_notification(
     :param body:            body of the e-mail
     :param smtp_server:     smtp server
     :param smtp_port:       optional port for the smtp server. smtplib.SMTP_PORT (=25) is used if not provided
+    :param attachments:     optional list of attachments' file paths
     :return:                None
     """
     charset.add_charset("utf-8", charset.QP, charset.QP, "utf-8")
@@ -88,6 +92,11 @@ def send_email_notification(
     html_message = MIMEText(html.encode("utf-8"), "html", "utf-8")  # type: ignore
     mail.attach(txt_message)
     mail.attach(html_message)
+    for attachment in attachments:
+        with open(attachment, "rb") as att_file:
+            part = MIMEApplication(att_file.read(), Name=os.path.basename(attachment))
+        part["Content-Disposition"] = f'attachment; filename="{os.path.basename(attachment)}"'
+        mail.attach(part)
     logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
     logger.debug(f"Subject: '{subject}', body: '{body}'")
     sender = smtplib.SMTP(smtp_server, smtp_port)
