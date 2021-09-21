@@ -1,6 +1,7 @@
 """Module containing universal functions for file operations that can be used with urpa robots"""
 
 import glob
+import json
 import logging
 import os
 import shutil
@@ -103,6 +104,17 @@ def read_txt_file(file_name: str, encoding: str = "utf-8") -> str:
     """
     with open(file_name, "r", encoding=encoding) as txt_file:
         return txt_file.read()
+
+
+def read_json_file(file_name: str, encoding: str = "utf-8") -> dict:
+    """Reads a json file
+
+    :param file_name:    path
+    :param encoding:     encoding to use
+    :return:             dict content
+    """
+    with open(file_name, "r", encoding=encoding) as json_file:
+        return json.load(json_file)
 
 
 class Helper:

@@ -42,8 +42,11 @@ urpautils.write_txt_file("C:\\path\\to\\file.txt", "This will be written to the 
 # Append to text file
 urpautils.write_txt_file("C:\\path\\to\\file.txt", "This will be appended to the file", mode="a")
 
-# Read text file. Returns None if the file does not exist
-content = read_txt_file("C:\\path\\to\\file.txt")
+# Read text file. Raises FileNotFoundError if the file does not exist
+content = urpautils.read_txt_file("C:\\path\\to\\file.txt")
+
+# Read json file. Raises FileNotFoundError if the file does not exist
+content = urpautils.read_json_file("C:\\path\\to\\file.json")
 
 # All functions above have optional argument 'encoding' which defaults to 'utf-8-sig'
 
