@@ -106,13 +106,13 @@ def read_txt_file(file_name: str, encoding: str = "utf-8") -> str:
         return txt_file.read()
 
 
-def read_json_file(file_name: str, encoding: str = "utf-8") -> str:
+def read_json_file(file_name: str, encoding: str = "utf-8") -> dict:
     """Reads a json file
 
-        :param file_name:    path
-        :param encoding:     encoding to use
-        :return:             str content
-        """
+    :param file_name:    path
+    :param encoding:     encoding to use
+    :return:             str content
+    """
     with open(file_name, "r", encoding=encoding) as json_file:
         return json.load(json_file)
 
