@@ -1,4 +1,7 @@
 # Changelog
+## [Unreleased]
+- Added function `read_json()`
+
 ## [0.3.0] 2021-09-06
 ### Added
 - Optional arg `attachments` to `send_email_notification` function
