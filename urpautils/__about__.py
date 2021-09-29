@@ -1,4 +1,4 @@
-"""Information about urpatimeout module."""
+"""Information about urpautils module."""
 __title__ = "urpautils"
 __description__ = "Module containig universal functions used with UltimateRPA robots"
 __version__ = "0.3.0"
