@@ -6,7 +6,7 @@ import os
 import sys
 
 from itertools import islice
-from typing import Optional, Iterable, Generator, Union
+from typing import Any, Optional, Iterable, Generator, Union
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +29,9 @@ def csv_append_row(
         if isinstance(row, dict):
             csv_writer = csv.DictWriter(csv_file, delimiter=delimiter, fieldnames=row.keys())
         else:
-            csv_writer = csv.writer(csv_file, delimiter=delimiter)
-        csv_writer.writerow(row)
+            # mypy is retarded. It thinks `csv_writer` already has type `DictWriter` here
+            csv_writer = csv.writer(csv_file, delimiter=delimiter)  # type: ignore
+        csv_writer.writerow(row)  # type: ignore
 
 
 def csv_create_file(
@@ -99,7 +100,7 @@ def csv_read_rows(
             for row in islice(csv_reader, start_row_index, end_row_index):
                 yield dict(row)
         else:
-            csv_reader = csv.reader(csv_file, delimiter=delimiter)
+            csv_reader = csv.reader(csv_file, delimiter=delimiter)  # type: ignore
             for row in islice(csv_reader, start_row_index, end_row_index):
                 yield row
 
@@ -113,7 +114,7 @@ class Csv_dict_writer:
         self.newline = newline
         self.encoding = encoding
         self.delimiter = delimiter
-        self.fieldnames = None
+        self.fieldnames: Any = []  # 'Any' so we make mypy happy
 
     def write(self, data: dict) -> None:
         """Writes row to csv file
