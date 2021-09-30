@@ -12,8 +12,6 @@ from typing import Optional
 
 from .universal import timestamp
 
-import __main__
-
 logger = logging.getLogger(__name__)
 
 
@@ -214,40 +212,6 @@ def prepare_dir(dir_name: str) -> None:
     if not os.path.exists(dir_name):
         logger.info(f"Creating new directory '{dir_name}'.")
         os.mkdir(dir_name)
-
-
-# TODO remove this.  _get_main_file_name() with the stack trace seems to work fine
-# def _get_main_file_name() -> str:
-#     """Parses all files in current working directory and returns name of file that contains function 'main'
-#     approach via __main__.__file__ does not work because urpa robot loads files dynamicaly so file __main__
-#     has no attribude __file__
-
-#     # TODO ignore lines that are commented out
-#     # TODO 2: write tests for this
-
-#     :return:       basename of the main file
-#     """
-#     main_file = None
-#     all_files = os.listdir()
-#     py_files = [file for file in all_files if ".py" in file]
-#     for file_name in py_files:
-#         try:
-#             with open(file_name, "r", encoding="utf-8") as file:
-#                 content = file.read()
-#         except PermissionError:
-#             continue
-#         if "def main()" in content:
-#             if not main_file:
-#                 main_file = os.path.splitext(file_name)[0]
-#             else:
-#                 raise RuntimeError(
-#                     "More than one .py file contains function 'main()'. Please specify 'current_log_dir' arg manually"
-#                 )
-#     if not main_file:
-#         raise RuntimeError(
-#             "No .py file containing function 'main()' found. Please specify 'current_log_dir' arg manually"
-#         )
-#     return main_file
 
 
 def _get_main_file_name() -> str:
