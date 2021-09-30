@@ -1,6 +1,9 @@
 # Changelog
 ## [Unreleased]
 - Added function `read_json()`
+- [#7](https://github.com/ultimaterpa/urpautils/issues/7) : Added option to read csv file as dictionary to function `csv_read_rows()` via `as_dict` arg
+- [#7](https://github.com/ultimaterpa/urpautils/issues/7) : Added class `Csv_dict_writer` for writing dictionary to csv
+- Added optional arg `sep` to `csv_create_file()`. If provided it writes "sep=<separator>" to first line of the file so it opens correctly in Excel
 
 ## [0.3.0] 2021-09-06
 ### Added
