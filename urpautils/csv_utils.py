@@ -27,7 +27,7 @@ def csv_append_row(
         raise FileNotFoundError(f"File '{file_path}' does not exist")
     with open(file_path, "a", newline=newline, encoding=encoding) as csv_file:
         if isinstance(row, dict):
-            csv_writer = csv.DictWriter(csv_file, delimiter=delimiter, fieldnames=row.keys())
+            csv_writer = csv.DictWriter(csv_file, delimiter=delimiter, fieldnames=row.keys())  # type: ignore
         else:
             # mypy is retarded. It thinks `csv_writer` already has type `DictWriter` here
             csv_writer = csv.writer(csv_file, delimiter=delimiter)  # type: ignore
