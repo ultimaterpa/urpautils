@@ -1,5 +1,7 @@
 # Changelog
 ## [Unreleased]
+
+## [0.4.0]
 - Added function `read_json()`
 - [#7](https://github.com/ultimaterpa/urpautils/issues/7) : Added option to read csv file as dictionary to function `csv_read_rows()` via `as_dict` arg
 - [#7](https://github.com/ultimaterpa/urpautils/issues/7) : Added class `Csv_dict_writer` for writing dictionary to csv
