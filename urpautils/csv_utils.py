@@ -6,7 +6,7 @@ import os
 import sys
 
 from itertools import islice
-from typing import Optional, Iterable, Generator
+from typing import Any, Optional, Iterable, Generator, Union
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +26,12 @@ def csv_append_row(
     if not os.path.isfile(file_path):
         raise FileNotFoundError(f"File '{file_path}' does not exist")
     with open(file_path, "a", newline=newline, encoding=encoding) as csv_file:
-        csv_writer = csv.writer(csv_file, delimiter=delimiter)
-        csv_writer.writerow(row)
+        if isinstance(row, dict):
+            csv_writer = csv.DictWriter(csv_file, delimiter=delimiter, fieldnames=row.keys())  # type: ignore
+        else:
+            # mypy is retarded. It thinks `csv_writer` already has type `DictWriter` here
+            csv_writer = csv.writer(csv_file, delimiter=delimiter)  # type: ignore
+        csv_writer.writerow(row)  # type: ignore
 
 
 def csv_create_file(
@@ -36,6 +40,7 @@ def csv_create_file(
     newline: str = "",
     encoding: str = "utf-8",
     delimiter: str = ";",
+    sep: Optional[str] = None,
 ) -> None:
     """Creates new csv file and writes its header if provided
 
@@ -44,7 +49,8 @@ def csv_create_file(
     :param newline:       newline character
     :param encoding:      encoding of the csv file
     :param delimiter:     csv delimiter
-    return None
+    :param sep:           if provided it writes "sep=<separator>" to first line of the file so it opens correctly in Excel
+    :return:              None
     """
     if os.path.isfile(file_path):
         raise FileExistsError(f"File '{file_path}' already exists")
@@ -55,6 +61,8 @@ def csv_create_file(
     with open(file_path, "w", newline=newline, encoding=encoding) as csv_file:
         if header:
             csv_writer = csv.writer(csv_file, delimiter=delimiter)
+            if sep:
+                csv_writer.writerow(f"sep={sep}")
             csv_writer.writerow(header)
 
 
@@ -65,19 +73,71 @@ def csv_read_rows(
     newline: str = "",
     encoding: str = "utf-8",
     delimiter: str = ";",
-) -> Generator[list, None, None]:
+    as_dict: bool = False,
+) -> Generator[Union[list, dict], None, None]:
     """Generates rows of a csv file.
     If start_row_index is provided it starts generating from that row index
     If end_row_index is provided it stops generating at that index
     If no start_row_index and end_row_index is provided it yields all rows
+    Generator yeields rows as list by default. If 'as_dict' is set to True it generates rows as dicts where
+    keys are columns of the first row and values are columns of n-th row
 
-    :param file_path:     path
-    :param row_index:     index of the row to return
-    :return:              list of columns in the row
+    :param file_path:           path
+    :param start_row_index:     start index of the rows to yield
+    :param end_row_index:       end index of the rows to yield
+    :param newline:             newline character
+    :param encoding:            encoding of the csv file
+    :param delimiter:           csv delimiter
+    :param as_dict:             yields rows as lists if False and as dicts if True. If dicts are used
+                                keys are columns of the first row and values are columns of n-th row
+    :return:                    list of columns in the row
     """
     if not os.path.isfile(file_path):
         raise FileNotFoundError(f"File '{file_path}' does not exist")
     with open(file_path, newline=newline, encoding=encoding) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=delimiter)
-        for row in islice(csv_reader, start_row_index, end_row_index):
-            yield row
+        if as_dict:
+            csv_reader = csv.DictReader(csv_file, delimiter=delimiter)
+            for row in islice(csv_reader, start_row_index, end_row_index):
+                yield dict(row)
+        else:
+            csv_reader = csv.reader(csv_file, delimiter=delimiter)  # type: ignore
+            for row in islice(csv_reader, start_row_index, end_row_index):
+                yield row
+
+
+class Csv_dict_writer:
+    """Class used for writing multiple dicts with same keys to one csv file"""
+
+    def __init__(self, file_path: str, newline: str = "", encoding: str = "utf-8", delimiter: str = ";"):
+        """Init"""
+        self.file_path = file_path
+        self.newline = newline
+        self.encoding = encoding
+        self.delimiter = delimiter
+        self.fieldnames: Any = []  # 'Any' so we make mypy happy
+
+    def write(self, data: dict) -> None:
+        """Writes row to csv file
+        If file does not exist it creates it and writes header based on `data.keys()`.
+        This header is then stored via `self.fieldnames` and used for subsequent writes
+        because next dictionary can have same keys but in different order and it would mess up the file.
+
+        If file exists it appends to it
+
+        :param data:    dictionary
+        :return:        None
+        """
+        if not isinstance(data, dict):
+            raise TypeError("'data' must be type 'dict'")
+        if self.fieldnames and sorted(self.fieldnames) != sorted(data.keys()):
+            raise KeyError(
+                f"Keys '{data.keys()}' are not the same as keys '{self.fieldnames}' which are already written in file '{self.file_path}'"
+            )
+        mode = "a" if os.path.isfile(self.file_path) else "w"
+        if mode == "w":
+            self.fieldnames = data.keys()
+        with open(self.file_path, mode, newline=self.newline, encoding=self.encoding) as csv_file:
+            csv_writer = csv.DictWriter(csv_file, delimiter=self.delimiter, fieldnames=self.fieldnames)
+            if mode == "w":
+                csv_writer.writeheader()
+            csv_writer.writerow(data)

@@ -98,15 +98,30 @@ import urpautils
 # Properties such as encoding, delimiter and newline can be set via optional arguments with corresponding name
 
 # Create csv file and write header to it
+# this function also has optional kwarg "sep". If provided it writes "sep=<separator>" to first line of the file so it opens correctly in Excel
 urpautils.csv_create_file("C:\\path\\to\\file.csv", header=["1st column", "2nd column"])
 
 # Append row to an existing CSV file
 urpautils.csv_append_row("C:\\path\\to\\file.csv", ["foo", "bar"])
 
+# If we have large amount of data stored in dictionaries. We can write them directly with this class
+dict_A = {"name": "ben", "surname": "dover"}
+dict_B = {"name": "hugh", "surname": "jass"}
+dict_C = {"surname": "mcOkiner", "name": "duncan"}
+dict_writer = urpautils.Csv_dict_writer("C:\\path\\to\\file.csv")
+dict_writer.write(dict_A)
+dict_writer.write(dict_B)
+dict_writer.write(dict_C)
+
 # Read rows from CSV file
 #   besides optional arguments such as newline or encoding this function has two more arguments:
 #   'start_row_index' and `end_row_index`. All rows are read if not provided
-urpautils.csv_read_rows("C:\\path\\to\\file.csv")
+for row in urpautils.csv_read_rows("C:\\path\\to\\file.csv"):
+    print(row) # prints `["column1", "column2", "column3", "column4"]`
+# by default rows are yilded as lists. Alternatively kwarg "as_dict=True" can be used.
+# Rows are then yielded as <first row> : <n-th row> key-value pairs
+for row in urpautils.csv_read_rows("C:\\path\\to\\file.csv", as_dict=True):
+    print(row) # prints `{"header1": "column1", "header2": "column2", "header3": "column3", "header4": "column4"}`
 
 ```
 
