@@ -1,6 +1,10 @@
 # Changelog
 ## [Unreleased]
 
+## [0.4.1] 2021-10-21
+## Changed
+- `Csv_dict_writer` now requires `field_names` for initialization
+
 ## [0.4.0] 2021-10-14
 - Added function `read_json()`
 - [#7](https://github.com/ultimaterpa/urpautils/issues/7) : Added option to read csv file as dictionary to function `csv_read_rows()` via `as_dict` arg

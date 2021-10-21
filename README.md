@@ -108,7 +108,8 @@ urpautils.csv_append_row("C:\\path\\to\\file.csv", ["foo", "bar"])
 dict_A = {"name": "ben", "surname": "dover"}
 dict_B = {"name": "hugh", "surname": "jass"}
 dict_C = {"surname": "mcOkiner", "name": "duncan"}
-dict_writer = urpautils.Csv_dict_writer("C:\\path\\to\\file.csv")
+# we need to define which keys to except. "name" and "surname" in this case
+dict_writer = urpautils.Csv_dict_writer("C:\\path\\to\\file.csv", ["name", "surname"])
 dict_writer.write(dict_A)
 dict_writer.write(dict_B)
 dict_writer.write(dict_C)

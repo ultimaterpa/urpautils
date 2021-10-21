@@ -36,7 +36,7 @@ def test_csv_file(tmpdir):
 def test_csv_dict_writer(tmpdir):
     """Test the Csv_dict_writer class"""
     path = os.path.join(tmpdir, "test.csv")
-    dict_writer = Csv_dict_writer(path)
+    dict_writer = Csv_dict_writer(path, ["name", "surname"])
     data = {"name": "ben", "surname": "dover"}
     dict_writer.write(data)
     # first writing creates the file

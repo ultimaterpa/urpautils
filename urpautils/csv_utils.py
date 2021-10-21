@@ -6,7 +6,7 @@ import os
 import sys
 
 from itertools import islice
-from typing import Any, Optional, Iterable, Generator, Union
+from typing import Any, List, Optional, Iterable, Generator, Union
 
 logger = logging.getLogger(__name__)
 
@@ -108,13 +108,23 @@ def csv_read_rows(
 class Csv_dict_writer:
     """Class used for writing multiple dicts with same keys to one csv file"""
 
-    def __init__(self, file_path: str, newline: str = "", encoding: str = "utf-8", delimiter: str = ";"):
-        """Init"""
+    def __init__(
+        self, file_path: str, field_names: List[str], newline: str = "", encoding: str = "utf-8", delimiter: str = ";"
+    ):
+        """[summary]
+
+        Args:
+            file_path (str): file path
+            field_names (List): list of keys used in desired dict. One key = one column
+            newline (str, optional): newline char for the csv file. Defaults to "".
+            encoding (str, optional): encoding of the csv file. Defaults to "utf-8".
+            delimiter (str, optional): delimiter used in the csv file. Defaults to ";".
+        """
         self.file_path = file_path
+        self.fieldnames = field_names
         self.newline = newline
         self.encoding = encoding
         self.delimiter = delimiter
-        self.fieldnames: Any = []  # 'Any' so we make mypy happy
 
     def write(self, data: dict) -> None:
         """Writes row to csv file
@@ -129,13 +139,9 @@ class Csv_dict_writer:
         """
         if not isinstance(data, dict):
             raise TypeError("'data' must be type 'dict'")
-        if self.fieldnames and sorted(self.fieldnames) != sorted(data.keys()):
-            raise KeyError(
-                f"Keys '{data.keys()}' are not the same as keys '{self.fieldnames}' which are already written in file '{self.file_path}'"
-            )
+        if sorted(self.fieldnames) != sorted(data.keys()):
+            raise KeyError(f"Keys '{data.keys()}' are not the same as previously defined keys '{self.fieldnames}'")
         mode = "a" if os.path.isfile(self.file_path) else "w"
-        if mode == "w":
-            self.fieldnames = data.keys()
         with open(self.file_path, mode, newline=self.newline, encoding=self.encoding) as csv_file:
             csv_writer = csv.DictWriter(csv_file, delimiter=self.delimiter, fieldnames=self.fieldnames)
             if mode == "w":
