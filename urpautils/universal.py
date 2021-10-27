@@ -67,7 +67,7 @@ def send_email_notification(
     smtp_server: str,
     smtp_port: int = 0,
     attachments: List[str] = [],
-    debug_level: int = 0
+    debug_level: int = 0,
 ) -> None:
     """Sends an e-mail
 
