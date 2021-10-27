@@ -67,6 +67,7 @@ def send_email_notification(
     smtp_server: str,
     smtp_port: int = 0,
     attachments: List[str] = [],
+    debug_level: int = 0
 ) -> None:
     """Sends an e-mail
 
@@ -100,7 +101,7 @@ def send_email_notification(
     logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
     logger.debug(f"Subject: '{subject}', body: '{body}'")
     sender = smtplib.SMTP(smtp_server, smtp_port)
-    sender.set_debuglevel(1)
+    sender.set_debuglevel(debug_level)
     sender.sendmail(email_sender, recipients + recipients_copy, mail.as_string())
     sender.quit()
     logger.info("E-mail sent")

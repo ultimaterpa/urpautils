@@ -142,6 +142,7 @@ urpautils.killapp("image_name")
 # Send an email
 # port is an optional argument. smtplib.SMTP_PORT (=25) is used if not provided
 # attachments is an optional argument
+# there is one more optional arg: debug_level (defaults to 0)
 urpautils.send_email_notification(
     "sender@stringdata.cz",
     ["recipient1@gmail.com", "recipient2@gmail.com"],

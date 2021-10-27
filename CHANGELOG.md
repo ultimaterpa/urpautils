@@ -1,6 +1,10 @@
 # Changelog
 ## [Unreleased]
 
+## [0.4.2] 2021-10-27
+## Changed
+- Option to set debug level for `send_email_notification()` function
+
 ## [0.4.1] 2021-10-21
 ## Changed
 - `Csv_dict_writer` now requires `field_names` for initialization
