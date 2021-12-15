@@ -67,7 +67,7 @@ def send_email_notification(
     smtp_server: str,
     smtp_port: int = 0,
     attachments: List[str] = [],
-    debug_level: int = 0,
+    debug_level: int = 0
 ) -> None:
     """Sends an e-mail
 
@@ -79,25 +79,31 @@ def send_email_notification(
     :param smtp_server:     smtp server
     :param smtp_port:       optional port for the smtp server. smtplib.SMTP_PORT (=25) is used if not provided
     :param attachments:     optional list of attachments' file paths
+    :param debug_level:     optional int, default is 0
     :return:                None
     """
-    charset.add_charset("utf-8", charset.QP, charset.QP, "utf-8")
-    mail = MIMEMultipart("alternative")
-    mail["Subject"] = Header(subject, "utf-8")
-    mail["From"] = email_sender
+
+    charset.add_charset("utf-8", charset.QP, charset.QP)
+
+    mail = MIMEMultipart("mixed")
     mail["To"] = ", ".join(recipients)
+    mail["From"] = email_sender
     mail["Cc"] = ", ".join(recipients_copy)
+    mail["Subject"] = Header(subject, "utf-8")
+
+    message_alternative = MIMEMultipart("alternative")
     text = body
     html = "<html><body>" + body + "</body></html>"
-    txt_message = MIMEText(text.encode("utf-8"), "plain", "utf-8")  # type: ignore
-    html_message = MIMEText(html.encode("utf-8"), "html", "utf-8")  # type: ignore
-    mail.attach(txt_message)
-    mail.attach(html_message)
+    message_alternative.attach(MIMEText(text, "plain", _charset="utf-8"))  # type: ignore
+    message_alternative.attach(MIMEText(html, "html", _charset="utf-8"))  # type: ignore
+    mail.attach(message_alternative)
+
     for attachment in attachments:
         with open(attachment, "rb") as att_file:
             part = MIMEApplication(att_file.read(), Name=os.path.basename(attachment))
         part["Content-Disposition"] = f'attachment; filename="{os.path.basename(attachment)}"'
         mail.attach(part)
+
     logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
     logger.debug(f"Subject: '{subject}', body: '{body}'")
     sender = smtplib.SMTP(smtp_server, smtp_port)
