@@ -1,5 +1,7 @@
 # Changelog
-## [Unreleased]
+## [0.4.3] 2022-01-19
+### Fixed
+- [#12](https://github.com/ultimaterpa/urpautils/pull/12) : Fixed sending attachments with `send_email_notification()`
 
 ## [0.4.2] 2021-10-27
 ## Changed
