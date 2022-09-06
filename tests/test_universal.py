@@ -95,6 +95,34 @@ class Test_verify_ico:
             universal.verify_ico(123)
 
 
+class Test_verify_ico_justificatrion:
+    """Test correct justification of a BIN number"""
+
+    @pytest.mark.parametrize("number,expected", [("1234", "00001234"), ("12345678", "12345678")])
+    def test_valid(self, number, expected):
+        assert universal.justify_ico(number) == expected
+
+    @pytest.mark.parametrize("number,expected", [("1234", "11111234"), ("12345678", "12345678")])
+    def test_different_fill_char(self, number, expected):
+        assert universal.justify_ico(number, "1") == expected
+
+    def test_value_error(self):
+        with pytest.raises(ValueError):
+            universal.justify_ico(123)
+        with pytest.raises(ValueError):
+            universal.justify_ico("1234", "00")
+        with pytest.raises(ValueError):
+            universal.justify_ico("1234", "a")
+        with pytest.raises(ValueError):
+            universal.justify_ico("1234", 1)
+        with pytest.raises(ValueError):
+            universal.justify_ico("12")
+        with pytest.raises(ValueError):
+            universal.justify_ico("123456789")
+        with pytest.raises(ValueError):
+            universal.justify_ico("1234a")
+
+
 @pytest.mark.skip(reason="no way of testing this")
 def test_clear_ie_cache(self):
     """Not implemented

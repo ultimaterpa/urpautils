@@ -202,6 +202,26 @@ def verify_ico(bin: str) -> bool:
     return int(bin[7]) == c
 
 
+def justify_ico(bin: str, fill_char: str = "0") -> str:
+    """Pads BIN number with 'fill_char' to length 8 (123456 -> 00123456)
+
+    Args:
+        bin (str): BIN to be padded
+        fill_char (str): char to be padded with
+
+    Returns:
+        str: padded BIN
+    """
+    if not isinstance(fill_char, str) or not fill_char.isnumeric() or len(fill_char) != 1:
+        raise ValueError(f"Invalid 'fill_char'. Fill char must be numeric string with length exactly 1")
+    if isinstance(bin, str):
+        if not bin.isnumeric() or len(bin) > 8 or len(bin) < 4:
+            raise ValueError("Invalid BIN number. BIN must be numeric value between 4 and 8 digits")
+        return bin.rjust(8, fill_char)
+    else:
+        raise ValueError(f"'BIN' must be an instance of 'str', not '{type(bin)}'")
+
+
 def clear_ie_cache(check: bool = False) -> None:
     r"""Clears Internet Explorer cache and makes registry change so it does not open 'customize' window on first run
     RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255

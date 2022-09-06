@@ -160,6 +160,10 @@ is_valid = urpautils.verify_rc("990512/1234")
 # Verify BIN (IČO)
 is_valid = urpautils.verify_ico("12345678")
 
+# Pad BIN (IČO) with zeros to length 8
+padded_bin = urpautils.justify_ico("1234") # returns 00001234
+padded_bin = urpautils.justify_ico("1234", "5") # returns 55551234
+
 # Clear Internet Explorer Cache and disable "customize" window at first run
 urpautils.clear_ie_cache()
 

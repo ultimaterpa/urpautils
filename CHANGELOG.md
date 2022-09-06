@@ -1,4 +1,8 @@
 # Changelog
+## [0.5.0] 2022-09-06
+### Added
+- [#13](https://github.com/ultimaterpa/urpautils/issues/13) : function `justify_ico`
+
 ## [0.4.3] 2022-01-19
 ### Fixed
 - [#12](https://github.com/ultimaterpa/urpautils/pull/12) : Fixed sending attachments with `send_email_notification()`
