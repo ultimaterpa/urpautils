@@ -8,7 +8,7 @@ import re
 import smtplib
 import subprocess
 import time
-from typing import List, Optional
+from typing import List, Optional, Callable
 
 from email import charset
 from email.header import Header
