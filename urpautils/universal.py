@@ -114,8 +114,8 @@ def send_email_notification(
     logger.info("E-mail sent")
 
 
-def repeat(func):
-    """Wrapper pro funkce, kde provadim vzdy stejnou akci"""
+def repeat(func) -> Callable:
+    """Function, which contains wrapper and is used as decorator for other functions/methods"""
 
     @functools.wraps(func)
     def wrapper(*args, action: str, repetition: int = 3, **kwargs) -> Callable:
