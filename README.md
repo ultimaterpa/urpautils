@@ -154,6 +154,13 @@ urpautils.send_email_notification(
     attachments = ["path/to/file1.jpg", "path/to/file2.jpg"]
 )
 
+# Repeat certain commands in a function/method
+@urpautils.repeat(action="Click on OK")
+def click_ok() -> None:
+    """Clicks on OK and then checks if the command was executed"""    
+    app.find_first(cf.name("OK").button()).send_mouse_click()
+    urpautils.check_elements(app, cf.value("Application name").title_bar())
+
 # Verify Personal Identification Number (Rodné číslo)
 is_valid = urpautils.verify_rc("990512/1234")
 
