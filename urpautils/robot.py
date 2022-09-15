@@ -17,6 +17,10 @@ cf = urpa.condition_factory()
 logger = logging.getLogger(__name__)
 
 
+class ElementFoundError(Exception):
+    """Raised if an element was found"""
+
+
 def parallel_search(
     app: urpa.App, *conditions: Union[urpa.Condition, Sequence[urpa.Condition]], wait: int = 10000
 ) -> Tuple[int, list]:
@@ -55,6 +59,33 @@ def check_elements(
         else:
             app.find_first(condition, timeout=timeout)
     logger.debug("Control elements found")
+
+
+def check_elements_reversed(
+    app: urpa.App,
+    *conditions: Union[urpa.Condition, Sequence[urpa.Condition]],
+    timeout: Optional[int] = None,
+) -> None:
+    """Reverse function for check_elements.
+    Searches for control elements and raises ElementFoundError if any found
+
+    :param app:            urpa app
+    :param *conditions:    cf conditions of the element(s)
+    :param timeout:        optional timeout in ms (urpa.default_timeout is used if None)
+    :return:               None
+    """
+
+    logger.debug("Searching for control elements")
+    for condition in conditions:
+        try:
+            if timeout is None:
+                app.find_first(condition)
+            else:
+                app.find_first(condition, timeout=timeout)
+        except urpa.ElementNotFoundError:
+            continue
+        else:
+            raise ElementFoundError(f"Element found: '{condition}'")
 
 
 def robot_setup(
