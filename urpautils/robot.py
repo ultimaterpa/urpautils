@@ -57,6 +57,33 @@ def check_elements(
     logger.debug("Control elements found")
 
 
+def check_elements_reversed(
+    app: urpa.App,
+    *conditions: Union[urpa.Condition, Sequence[urpa.Condition]],
+    timeout: Optional[int] = None,
+) -> None:
+    """Reverse function for check_elements.
+    Searches for control elements and raises ReferenceError if any found
+
+    :param app:            urpa app
+    :param *conditions:    cf conditions of the element(s)
+    :param timeout:        optional timeout in ms (urpa.default_timeout is used if None)
+    :return:               None
+    """
+
+    logger.debug("Searching for control elements")
+    for condition in conditions:
+        try:
+            if timeout is None:
+                app.find_first(condition)
+            else:
+                app.find_first(condition, timeout=timeout)
+        except urpa.ElementNotFoundError:
+            continue
+        else:
+            raise ReferenceError(f"Element '{condition}' is still visible")
+
+
 def robot_setup(
     screen_resolution: Tuple[int, int, int],
     default_timeout: Optional[int] = None,

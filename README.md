@@ -196,6 +196,9 @@ index, elements = urpautils.parallel_search(urpa.App, cf.window(), cf.button())
 # Find control elements
 urpautils.check_elements(urpa.App, cf.window(), cf.button())
 
+# Find control elements, raise ReferenceError if any of them found
+urpautils.check_elements_reversed(urpa.App, cf.window(), cf.button())
+
 # Save file as
 # by default it assumes Save As window is already opened
 urpautils.save_as("file.txt")
