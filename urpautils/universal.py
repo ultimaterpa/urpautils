@@ -1,13 +1,14 @@
 """Module containing universal functions that can be used with urpa robots"""
 
 import datetime
+import functools
 import logging
 import os
 import re
 import smtplib
 import subprocess
 import time
-from typing import List, Optional
+from typing import List, Optional, Callable
 
 from email import charset
 from email.header import Header
@@ -111,6 +112,38 @@ def send_email_notification(
     sender.sendmail(email_sender, recipients + recipients_copy, mail.as_string())
     sender.quit()
     logger.info("E-mail sent")
+
+
+def repeat(func) -> Callable:
+    """Function, which contains wrapper and is used as decorator for other functions/methods"""
+
+    @functools.wraps(func)
+    def wrapper(*args, action: str, repetition: int = 3, **kwargs) -> Callable:
+        """Repeat commands in a function until no Exception occurs, or run out of attempts
+
+        :param action:          str, the name of the action for logging purposes
+        :param repetition:      int, the number of repetitions, by default, is 3
+        :return Callable
+        """
+
+        error = None
+        logger.info(f"Executing action: '{action}'")
+        for pokus in range(1, repetition + 1):
+            try:
+                logger.info(f"'{pokus}'. attempt to execute: '{action}'")
+                return func(*args, **kwargs)
+            except Exception as err:
+                error = err
+                logger.exception(f"An Exception has occured: {err}")
+                continue
+            finally:
+                if not error:
+                    logger.info(f"Successfully executed: '{action}'")
+
+        logger.error(f"Unsuccessfully executed: '{action}'")
+        raise RuntimeError(f"Robot was unable to execute this action '{action}' due to this error '{error}'")
+
+    return wrapper
 
 
 def get_birth_date(number: str) -> datetime.date:
