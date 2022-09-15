@@ -1,4 +1,9 @@
 # Changelog
+## [0.6.0] 2022-09-15
+### Added
+- [#15](https://github.com/ultimaterpa/urpautils/pull/15) : decorator `repeat` for repeating an action on element
+- [#17](https://github.com/ultimaterpa/urpautils/pull/17) : function `check_elements_reversed` which raises error if an element is found
+
 ## [0.5.0] 2022-09-06
 ### Added
 - [#13](https://github.com/ultimaterpa/urpautils/issues/13) : function `justify_ico`
