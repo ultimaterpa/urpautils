@@ -162,7 +162,7 @@ def test_get_previous_work_day_date(today, expected):
     assert universal.get_previous_work_day_date(datetime.date(2018, 7, 5), "US") == datetime.date(2018, 7, 3)
 
 
-def create_time(sign: str, value: Union[float, int]) -> str:
+def _create_time(sign: str, value: Union[float, int]) -> str:
     """
     For testing purposes only for function test_robot_has_time
     :param sign             str, + or -
@@ -189,15 +189,15 @@ def create_time(sign: str, value: Union[float, int]) -> str:
 @pytest.mark.parametrize(
     "start,end,expected",
     [
-        ("0:00:00", create_time("-", 24), False),
-        ("0:00:00", create_time("-", 12), False),
-        ("0:00:00", create_time("-", 10), False),
-        ("0:00:00", create_time("-", 0.1), False),
-        ("0:00:00", create_time("-", 0), False),
-        ("0:00:00", create_time("+", 0.1), True),
-        ("0:00:00", create_time("+", 10), True),
-        ("0:00:00", create_time("+", 12), True),
-        ("0:00:00", create_time("+", 24), True),
+        ("0:00:00", _create_time("-", 24), False),
+        ("0:00:00", _create_time("-", 12), False),
+        ("0:00:00", _create_time("-", 10), False),
+        ("0:00:00", _create_time("-", 0.1), False),
+        ("0:00:00", _create_time("-", 0), False),
+        ("0:00:00", _create_time("+", 0.1), True),
+        ("0:00:00", _create_time("+", 10), True),
+        ("0:00:00", _create_time("+", 12), True),
+        ("0:00:00", _create_time("+", 24), True),
         ("0:00:00", "23:59:59", True)
     ],
 )
