@@ -198,7 +198,7 @@ def _create_time(sign: str, value: Union[float, int]) -> str:
         ("0:00:00", _create_time("+", 10), True),
         ("0:00:00", _create_time("+", 12), True),
         ("0:00:00", _create_time("+", 24), True),
-        ("0:00:00", "23:59:59", True)
+        ("0:00:00", "23:59:59", True),
     ],
 )
 def test_robot_has_time(start, end, expected):
