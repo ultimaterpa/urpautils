@@ -2,6 +2,7 @@
 
 
 import datetime
+from typing import Union
 
 import pytest
 from freezegun import freeze_time
@@ -159,3 +160,46 @@ def test_get_previous_work_day_date(today, expected):
     assert universal.get_previous_work_day_date(datetime.date(2021, 9, 2), "US") == datetime.date(2021, 9, 1)
     # independence day yeeehaw
     assert universal.get_previous_work_day_date(datetime.date(2018, 7, 5), "US") == datetime.date(2018, 7, 3)
+
+
+def create_time(sign: str, value: Union[float, int]) -> str:
+    """
+    For testing purposes only for function test_robot_has_time
+    :param sign             str, + or -
+    :param value            int in hours
+    :return: str
+    """
+
+    now = datetime.datetime.now()
+
+    if sign == "+":
+        if value + now.hour >= 24:
+            return "23:59:59"
+        dt = now + datetime.timedelta(hours=value)
+    elif sign == "-":
+        if value >= now.hour:
+            return "00:00:00"
+        dt = now - datetime.timedelta(hours=value)
+    else:
+        raise ValueError(f"Sign '{sign}' has to be '+' or '-'.")
+
+    return f"{dt.hour}:{dt.minute}:{dt.second}"
+
+
+@pytest.mark.parametrize(
+    "start,end,expected",
+    [
+        ("0:00:00", create_time("-", 24), False),
+        ("0:00:00", create_time("-", 12), False),
+        ("0:00:00", create_time("-", 10), False),
+        ("0:00:00", create_time("-", 0.1), False),
+        ("0:00:00", create_time("-", 0), False),
+        ("0:00:00", create_time("+", 0.1), True),
+        ("0:00:00", create_time("+", 10), True),
+        ("0:00:00", create_time("+", 12), True),
+        ("0:00:00", create_time("+", 24), True),
+        ("0:00:00", "23:59:59", True)
+    ],
+)
+def test_robot_has_time(start, end, expected):
+    assert universal.robot_has_time(start=start, end=end) == expected

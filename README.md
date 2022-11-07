@@ -185,6 +185,11 @@ pid_3 = urpautils.get_app_pid("chrome.exe", pids_to_exclude=[pid_1, pid_2])
 previous_work_day_date = get_previous_work_day_date()
 # You can specify day to use as reference as well as other countries' holidays
 previous_work_day_date = get_previous_work_day_date(today=datetime.date(2021, 9, 2), country="US")
+
+# Check if the current time is in a specified time interval (the robot can still run)
+has_time = urpautils.robot_has_time(end="14:00:00")  # time in range 00:00:00 - 14:00:00
+has_time = urpautils.robot_has_time(start="11:00:00")  # time in range 11:00:00 - 23:59:59
+has_time = urpautils.robot_has_time("12:00:00", "14:00:00")  # time in range 12:00:00 - 14:00:00
 ```
 
 ## Utilities dependent on the urpa library examples

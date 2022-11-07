@@ -362,3 +362,22 @@ def get_previous_work_day_date(today: datetime.date = datetime.date.today(), cou
         if not previous_day in holiday_days and not previous_day.weekday() in (5, 6):
             return previous_day
     raise RuntimeError("No previous working day found")
+
+
+def robot_has_time(start: str = "00:00:00", end: str = "23:59:59") -> bool:
+    """Returns True if current time is in range start <= current time <= end, else False
+
+    :param start:               str, in format HH:MM:SS, by default "00:00:00"
+    :param end:                 str, in format HH:MM:SS, by default "23:59:59"
+    :return                     bool
+    """
+    now = datetime.datetime.now()
+    try:
+        start_time = datetime.datetime.strptime(start, "%H:%M:%S").replace(year=now.year, month=now.month, day=now.day)
+        end_time = datetime.datetime.strptime(end, "%H:%M:%S").replace(year=now.year, month=now.month, day=now.day)
+    except ValueError:
+        raise ValueError(f"Value '{start}' or '{end}' is not in a correct format 'HH:MM:SS'")
+
+    if start_time <= now <= end_time:
+        return True
+    return False
