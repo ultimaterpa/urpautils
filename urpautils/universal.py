@@ -371,6 +371,11 @@ def robot_has_time(start: str = "00:00:00", end: str = "23:59:59") -> bool:
     :param end:                 str, in format HH:MM:SS, by default "23:59:59"
     :return                     bool
     """
+    if end in ("03:00:00", "3:00:00"):
+        logger.warning(
+            f"!!! Setting the end time at 03:00:00 is DANGEROUS due to the time shift. "
+            f"Please consider if it's necessary to end robotization at this time. !!!"
+        )
     now = datetime.datetime.now()
     try:
         start_time = datetime.datetime.strptime(start, "%H:%M:%S").replace(year=now.year, month=now.month, day=now.day)
@@ -378,6 +383,11 @@ def robot_has_time(start: str = "00:00:00", end: str = "23:59:59") -> bool:
     except ValueError:
         raise ValueError(f"Value '{start}' or '{end}' is not in a correct format 'HH:MM:SS'")
 
-    if start_time <= now <= end_time:
-        return True
-    return False
+    # If the robot runs until a next day, eg. from 22:00:00 - 02:00:00
+    if start > end:
+        if now < start_time:
+            start_time = start_time - datetime.timedelta(days=1)
+        elif now > start_time:
+            end_time = end_time + datetime.timedelta(days=1)
+
+    return start_time <= now <= end_time

@@ -189,17 +189,29 @@ def _create_time(sign: str, value: Union[float, int]) -> str:
 @pytest.mark.parametrize(
     "start,end,expected",
     [
-        ("0:00:00", _create_time("-", 24), False),
-        ("0:00:00", _create_time("-", 12), False),
-        ("0:00:00", _create_time("-", 10), False),
-        ("0:00:00", _create_time("-", 0.1), False),
-        ("0:00:00", _create_time("-", 0), False),
-        ("0:00:00", _create_time("+", 0.1), True),
-        ("0:00:00", _create_time("+", 10), True),
-        ("0:00:00", _create_time("+", 12), True),
-        ("0:00:00", _create_time("+", 24), True),
-        ("0:00:00", "23:59:59", True),
+        ("00:00:00", _create_time("-", 24), False),
+        ("00:00:00", _create_time("-", 12), False),
+        ("00:00:00", _create_time("-", 10), False),
+        ("00:00:00", _create_time("-", 0.1), False),
+        ("00:00:00", _create_time("-", 0), False),
+        ("00:00:00", _create_time("+", 0.1), True),
+        ("00:00:00", _create_time("+", 10), True),
+        ("00:00:00", _create_time("+", 12), True),
+        ("00:00:00", _create_time("+", 24), True),
+        ("00:00:00", "23:59:59", True),
+        ("23:59:59", "23:59:58", True),
     ],
 )
 def test_robot_has_time(start, end, expected):
+    """Test test_robot_has_time() function"""
     assert universal.robot_has_time(start=start, end=end) == expected
+
+
+def test_robot_has_time_valueerror():
+    """Check for an error ValueError"""
+    with pytest.raises(ValueError):
+        universal.robot_has_time("00:12")
+    with pytest.raises(ValueError):
+        universal.robot_has_time("24:00:00")
+    with pytest.raises(ValueError):
+        universal.robot_has_time(start="0:00:00", end="11-12-25")
