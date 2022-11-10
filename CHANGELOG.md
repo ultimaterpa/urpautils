@@ -1,4 +1,8 @@
 # Changelog
+## [0.7.0] 2022-11-10
+### Added
+- [#19](https://github.com/ultimaterpa/urpautils/issues/19) : function `robot_has_time`
+
 ## [0.6.0] 2022-09-15
 ### Added
 - [#15](https://github.com/ultimaterpa/urpautils/pull/15) : decorator `repeat` for repeating an action on element
