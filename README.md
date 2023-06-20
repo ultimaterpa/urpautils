@@ -137,7 +137,7 @@ timestamp = urpautils.timestamp()
 modified_path = urpautils.add_long_path_prefix("C:\\very\long\path")
 
 # Kill process tree
-urpautils.killapp("image_name")
+urpautils.kill_app("image_name")
 
 # Send an email
 # port is an optional argument. smtplib.SMTP_PORT (=25) is used if not provided
