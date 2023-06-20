@@ -1,5 +1,5 @@
 # Changelog
-## [0.8.0] 2023-06-20
+## [0.7.1] 2023-06-20
 ### Fixed
 - [#20](https://github.com/ultimaterpa/urpautils/issues/20) : function `repeat`
 
