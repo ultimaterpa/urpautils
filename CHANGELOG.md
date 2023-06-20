@@ -1,4 +1,8 @@
 # Changelog
+## [0.8.0] 2023-06-20
+### Fixed
+- [#20](https://github.com/ultimaterpa/urpautils/issues/20) : function `repeat`
+
 ## [0.7.0] 2022-11-10
 ### Added
 - [#19](https://github.com/ultimaterpa/urpautils/issues/19) : function `robot_has_time`
