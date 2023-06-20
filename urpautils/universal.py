@@ -160,6 +160,7 @@ def repeat(action: str, repetition: int = 3) -> Callable:
             raise RuntimeError(f"Robot was unable to execute this action '{action}' due to this error '{error}'")
 
         return wrapper
+
     return decorator
 
 
