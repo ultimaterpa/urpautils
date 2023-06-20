@@ -115,17 +115,31 @@ def send_email_notification(
 
 
 def repeat(action: str, repetition: int = 3) -> Callable:
-    """Function, which contains wrapper and is used as decorator for other functions/methods"""
+    """
+    Function that returns a decorator used to repeat commands in a function until no exception occurs,
+    or the maximum number of attempts is reached.
 
-    def decorator(func):
+    :param action: str, the name of the action for logging purposes
+    :param repetition: int, the number of repetitions (default is 3)
+    :return: Callable, the decorated function
+    """
+
+    def decorator(func: Callable) -> Callable:
+        """
+        Decorator function that wraps the provided function with the repeat behavior.
+
+        :param func: Callable, the function to be decorated
+        :return: Callable, the decorated function
+        """
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Callable:
-            """Repeat commands in a function until no Exception occurs, or run out of attempts
+            """
+            Repeat commands in a function until no exception occurs, or the maximum number of attempts is reached.
 
-            :param action:          str, the name of the action for logging purposes
-            :param repetition:      int, the number of repetitions, by default, is 3
-            :return Callable
+            :param args: positional arguments to be passed to the decorated function
+            :param kwargs: keyword arguments to be passed to the decorated function
+            :return: Callable, the decorated function's return value
             """
 
             error = None
