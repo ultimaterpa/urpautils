@@ -278,7 +278,7 @@ def copy_error_img(
     return error_img_path_output
 
 
-def add_timestamp_to_filename(abs_path: str, timestamp_format: str = '%Y-%m-%d') -> str:
+def add_timestamp_to_filename(abs_path: str, timestamp_format: str = "%Y-%m-%d") -> str:
     """
     This function takes an absolute file path and a timestamp format as inputs.
     It adds a timestamp to the file name and returns the new absolute file path.
