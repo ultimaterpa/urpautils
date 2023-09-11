@@ -89,6 +89,12 @@ urpautils.prepare_dir("C:\\path\\to\\dir")
 #   'offset': integer saying which file to copy starting from the end (0->last file, 1->second last file, ...)
 newly_created_image_path = urpautils.copy_error_img("C:\\path\\to\\destination_directory")
 
+# Add timestamp to file name
+# This function takes an absolute file path and an optional timestamp format as inputs (default is '%Y-%m-%d').
+# It adds a timestamp to the file name and returns the new absolute file path.
+new_file_path = urpautils.add_timestamp_to_filename(
+    "C:\\path\\to\\file.txt"
+)
 ```
 
 ### Universal utilities for working with CSV files
