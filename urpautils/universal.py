@@ -114,36 +114,54 @@ def send_email_notification(
     logger.info("E-mail sent")
 
 
-def repeat(func) -> Callable:
-    """Function, which contains wrapper and is used as decorator for other functions/methods"""
+def repeat(action: str, repetition: int = 3) -> Callable:
+    """
+    Function that returns a decorator used to repeat commands in a function until no exception occurs,
+    or the maximum number of attempts is reached.
 
-    @functools.wraps(func)
-    def wrapper(*args, action: str, repetition: int = 3, **kwargs) -> Callable:
-        """Repeat commands in a function until no Exception occurs, or run out of attempts
+    :param action: str, the name of the action for logging purposes
+    :param repetition: int, the number of repetitions (default is 3)
+    :return: Callable, the decorated function
+    """
 
-        :param action:          str, the name of the action for logging purposes
-        :param repetition:      int, the number of repetitions, by default, is 3
-        :return Callable
+    def decorator(func: Callable) -> Callable:
+        """
+        Decorator function that wraps the provided function with the repeat behavior.
+
+        :param func: Callable, the function to be decorated
+        :return: Callable, the decorated function
         """
 
-        error = None
-        logger.info(f"Executing action: '{action}'")
-        for pokus in range(1, repetition + 1):
-            try:
-                logger.info(f"'{pokus}'. attempt to execute: '{action}'")
-                return func(*args, **kwargs)
-            except Exception as err:
-                error = err
-                logger.exception(f"An Exception has occured: {err}")
-                continue
-            finally:
-                if not error:
-                    logger.info(f"Successfully executed: '{action}'")
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> Callable:
+            """
+            Repeat commands in a function until no exception occurs, or the maximum number of attempts is reached.
 
-        logger.error(f"Unsuccessfully executed: '{action}'")
-        raise RuntimeError(f"Robot was unable to execute this action '{action}' due to this error '{error}'")
+            :param args: positional arguments to be passed to the decorated function
+            :param kwargs: keyword arguments to be passed to the decorated function
+            :return: Callable, the decorated function's return value
+            """
 
-    return wrapper
+            error = None
+            logger.info(f"Executing action: '{action}'")
+            for pokus in range(1, repetition + 1):
+                try:
+                    logger.info(f"'{pokus}'. attempt to execute: '{action}'")
+                    return func(*args, **kwargs)
+                except Exception as err:
+                    error = err
+                    logger.exception(f"An Exception has occured: {err}")
+                    continue
+                finally:
+                    if not error:
+                        logger.info(f"Successfully executed: '{action}'")
+
+            logger.error(f"Unsuccessfully executed: '{action}'")
+            raise RuntimeError(f"Robot was unable to execute this action '{action}' due to this error '{error}'")
+
+        return wrapper
+
+    return decorator
 
 
 def get_birth_date(number: str) -> datetime.date:
