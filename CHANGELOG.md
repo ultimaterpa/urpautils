@@ -1,4 +1,9 @@
 # Changelog
+
+## [0.8.0] - 2023-09-11
+### Added
+- [#22](https://github.com/ultimaterpa/urpautils/issues/22) : function `add_timestamp_to_filename` which adds a timestamp to the file name in the given absolute file path.
+
 ## [0.7.1] 2023-06-20
 ### Fixed
 - [#20](https://github.com/ultimaterpa/urpautils/issues/20) : function `repeat`

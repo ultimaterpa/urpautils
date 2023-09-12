@@ -1,5 +1,6 @@
 """Module containing universal functions for file operations that can be used with urpa robots"""
 
+import datetime
 import glob
 import json
 import logging
@@ -275,3 +276,19 @@ def copy_error_img(
     error_img_path_output = os.path.join(output_dir, output_file_name)
     shutil.copyfile(error_img_path_log, error_img_path_output)
     return error_img_path_output
+
+
+def add_timestamp_to_filename(abs_path: str, timestamp_format: str = "%Y-%m-%d") -> str:
+    """
+    This function takes an absolute file path and a timestamp format as inputs.
+    It adds a timestamp to the file name and returns the new absolute file path.
+
+    :param abs_path: The absolute path to the file
+    :param timestamp_format: The format of the timestamp to be added (default is '%Y-%m-%d')
+    :return: The new absolute path with the timestamp added to the file name
+    """
+    path, base = os.path.split(abs_path)
+    filename, ext = os.path.splitext(base)
+    timestamp = datetime.datetime.now().strftime(timestamp_format)
+    new_filename = f"{timestamp}_{filename}{ext}"
+    return os.path.join(path, new_filename)
