@@ -170,6 +170,9 @@ def click_ok() -> None:
 # Verify Personal Identification Number (Rodné číslo)
 is_valid = urpautils.verify_rc("990512/1234")
 
+# Verify account number
+is_valid = urpautils.is_account_number_valid(prefix="000000", account_number="1234567890")
+
 # Verify BIN (IČO)
 is_valid = urpautils.verify_ico("12345678")
 

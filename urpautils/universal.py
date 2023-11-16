@@ -409,3 +409,32 @@ def robot_has_time(start: str = "00:00:00", end: str = "23:59:59") -> bool:
             end_time = end_time + datetime.timedelta(days=1)
 
     return start_time <= now <= end_time
+
+
+def is_account_number_valid(prefix: str, account_number: str) -> bool:
+    """
+    Validates an account number based on a specific weight system.
+
+    This function uses a predefined set of weights to validate the given prefix and account number.
+    Both the prefix and the account number are validated separately. Each digit of the prefix and
+    the account number is multiplied by a corresponding weight, and the sum of these products must
+    be divisible by 11 for the number to be considered valid.
+
+    :param prefix:                  str, The prefix part of the account number.
+    :param account_number:          str, The main part of the account number.
+    :return                         bool, True if the account number is valid, False otherwise.
+    """
+    # https://www.ecbs.org/Download/Tr201v3.9.pdf
+    weights = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1]
+    prefix_sum = 0
+    for digit, weight in zip(prefix, weights[-6:]):
+        prefix_sum += int(digit) * weight
+    prefix_remainder = prefix_sum % 11
+    if prefix_remainder != 0:
+        return False
+
+    account_number_sum = 0
+    for digit, weight in zip(account_number, weights):
+        account_number_sum += int(digit) * weight
+    account_number_remainder = account_number_sum % 11
+    return account_number_remainder == 0
