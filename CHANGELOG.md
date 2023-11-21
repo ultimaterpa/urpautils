@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.0] - 2023-11-16
+### Added
+- New function `is_account_number_valid` to validate account numbers using a weighted checksum algorithm, ensuring their compliance with ECBS standards.
+
 ## [0.8.0] - 2023-09-11
 ### Added
 - [#22](https://github.com/ultimaterpa/urpautils/issues/22) : function `add_timestamp_to_filename` which adds a timestamp to the file name in the given absolute file path.
