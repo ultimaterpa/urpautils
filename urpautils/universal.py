@@ -424,6 +424,10 @@ def is_account_number_valid(prefix: str, account_number: str) -> bool:
     :param account_number:          str, The main part of the account number.
     :return                         bool, True if the account number is valid, False otherwise.
     """
+
+    if not (isinstance(prefix, str) and isinstance(account_number, str)):
+        raise ValueError("Both prefix and account number must be strings.")
+
     # https://www.ecbs.org/Download/Tr201v3.9.pdf
     weights = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1]
     prefix_sum = 0

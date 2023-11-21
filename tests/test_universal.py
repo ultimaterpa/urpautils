@@ -215,3 +215,35 @@ def test_robot_has_time_valueerror():
         universal.robot_has_time("24:00:00")
     with pytest.raises(ValueError):
         universal.robot_has_time(start="0:00:00", end="11-12-25")
+
+
+class TestIsAccountNumberValid:
+    """Test is_account_number_valid() function"""
+
+    @pytest.mark.parametrize(
+        "prefix, account_number",
+        [
+            ("000019", "2235210247"),
+            ("006007", "0700103393"),
+        ],
+    )
+    def test_valid_account_numbers(self, prefix, account_number):
+        assert universal.is_account_number_valid(prefix, account_number)
+
+    @pytest.mark.parametrize(
+        "prefix, account_number",
+        [
+            ("000000", "1234567890"),
+            ("111111", "9876543210"),
+        ],
+    )
+    def test_invalid_account_numbers(self, prefix, account_number):
+        assert not universal.is_account_number_valid(prefix, account_number)
+
+    def test_invalid_input_types(self):
+        # Invalid the prefix part of the account number
+        with pytest.raises(ValueError):
+            universal.is_account_number_valid(12345, "67890")
+        # Invalid the main part of the account number
+        with pytest.raises(ValueError):
+            universal.is_account_number_valid("12345", 67890)
