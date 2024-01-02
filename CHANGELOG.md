@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.0] - 2024-01-02
+### Changed
+- Made arg `screen_resolution` of function `setup_robot` optional. This is intrended for testing/development puspouses since some RDP sessions are killed when changing resolution. This change was made with backwards compatibility in mind
+
 ## [0.9.0] - 2023-11-16
 ### Added
 - New function `is_account_number_valid` to validate account numbers using a weighted checksum algorithm, ensuring their compliance with ECBS standards.

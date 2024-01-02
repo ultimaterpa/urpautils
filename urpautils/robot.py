@@ -89,14 +89,15 @@ def check_elements_reversed(
 
 
 def robot_setup(
-    screen_resolution: Tuple[int, int, int],
+    screen_resolution: Optional[Tuple[int, int, int]] = None,
     default_timeout: Optional[int] = None,
     default_screenshot_format: str = "png",
     debug_mode: bool = False,
 ) -> None:
     """Initiates urpa robot
 
-    :param screen_resolution:          tuple (width, heigh, bit depth)
+    :param screen_resolution:          optional tuple (width, heigh, bit depth). It should be None only in test env. It
+                                       is highly recomended to use some specific resolution in production
     :param default_timeout:            optional default timeout for element searching. urpa.default_timeout is used if None
     :param default_screenshot_format:  png or bmp
     :param debug_mode:                 bool robot debug mode
@@ -110,10 +111,13 @@ def robot_setup(
     urpa.bring_to_foreground()
     if default_timeout is not None:
         urpa.set_default_timeout(default_timeout)
-    try:
-        urpa.check_screen_resolution(screen_resolution[0], screen_resolution[1], screen_resolution[2])
-    except ValueError:
-        urpa.set_screen_resolution(screen_resolution[0], screen_resolution[1], screen_resolution[2])
+    if screen_resolution is not None:
+        try:
+            urpa.check_screen_resolution(screen_resolution[0], screen_resolution[1], screen_resolution[2])
+        except ValueError:
+            urpa.set_screen_resolution(screen_resolution[0], screen_resolution[1], screen_resolution[2])
+    else:
+        logger.warning("Screen resolution is not set. It is recomended to set it for a production enviroment")
     urpa.default.screenshot_format = default_screenshot_format
     urpa.set_debug_mode(debug_mode)
 

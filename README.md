@@ -208,8 +208,12 @@ import urpautils
 
 cf = urpa.condition_factory()
 
-# Setup robot with 1920x1080 32bit resolution
-urpautils.setup_robot((1920, 1080, 32))
+# Setup robot
+urpautils.setup_robot()
+# Setup robot with 1920x1080 32bit resolution, 10000ms timeout, png screenshot format, debug mode
+urpautils.setup_robot((1920, 1080, 32), 10000, "png", True)
+# IMPORTANT NOTE: Even though all args are optional, it is higly recommended to use atleast resolution arg in a production.
+# It is optional for test purpouses: some RDP sessions are killed when resolution is changed. Which is annoying for development
 
 # Search for two or more elements in parallel
 index, elements = urpautils.parallel_search(urpa.App, cf.window(), cf.button())
