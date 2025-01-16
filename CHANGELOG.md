@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.1] - 2025-01-16
+### Fixed
+- Typehints for functions `parallel_search`, `check_elements`, `check_elements_reversed`
+
 ## [0.10.0] - 2024-01-02
 ### Changed
 - Made arg `screen_resolution` of function `setup_robot` optional. This is intended for testing/development purpouses since some RDP sessions are killed when changing resolution. This change was made with backwards compatibility in mind

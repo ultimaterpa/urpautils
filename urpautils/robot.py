@@ -22,11 +22,13 @@ class ElementFoundError(Exception):
 
 
 def parallel_search(
-    app: urpa.App, *conditions: Union[urpa.Condition, Sequence[urpa.Condition]], wait: int = 10000
+    app: Union[urpa.App, urpa.AppElement],
+    *conditions: Union[urpa.Condition, Sequence[urpa.Condition]],
+    wait: int = 10000,
 ) -> Tuple[int, list]:
     """Searches for multiple elements. Return first one found
 
-    :param app:            urpa app
+    :param app:            urpa app or app element
     :param *conditions:    cf conditions of the elements
     :param wait:           timeout in ms
     :return:               tuple (index of the element found, element)
@@ -41,13 +43,13 @@ def parallel_search(
 
 
 def check_elements(
-    app: urpa.App,
+    app: Union[urpa.App, urpa.AppElement],
     *conditions: Union[urpa.Condition, Sequence[urpa.Condition]],
     timeout: Optional[int] = None,
 ) -> None:
     """Searches for control elements
 
-    :param app:            urpa app
+    :param app:            urpa app or app element
     :param *conditions:    cf conditions of the element(s)
     :param timeout:        optional timeout in ms (urpa.default_timeout is used if None)
     :return:               None
@@ -62,14 +64,14 @@ def check_elements(
 
 
 def check_elements_reversed(
-    app: urpa.App,
+    app: Union[urpa.App, urpa.AppElement],
     *conditions: Union[urpa.Condition, Sequence[urpa.Condition]],
     timeout: Optional[int] = None,
 ) -> None:
     """Reverse function for check_elements.
     Searches for control elements and raises ElementFoundError if any found
 
-    :param app:            urpa app
+    :param app:            urpa app or app element
     :param *conditions:    cf conditions of the element(s)
     :param timeout:        optional timeout in ms (urpa.default_timeout is used if None)
     :return:               None
