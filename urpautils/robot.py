@@ -3,6 +3,7 @@
 import ctypes
 import locale
 import logging
+import time
 
 from typing import Tuple, Union, Sequence, Optional, List, Callable
 
@@ -25,7 +26,7 @@ def parallel_search(
     app: Union[urpa.App, urpa.AppElement],
     *conditions: Union[urpa.Condition, Sequence[urpa.Condition]],
     wait: int = 10000,
-) -> Tuple[int, list]:
+) -> Tuple[int, List[urpa.AppElement]]:
     """Searches for multiple elements. Return first one found
 
     :param app:            urpa app or app element
@@ -39,6 +40,7 @@ def parallel_search(
             elements = app.find_all(condition, 0)
             if elements:
                 return index, elements
+        time.sleep(0.1)
     raise urpa.ElementNotFoundError("Parallel_search: No elemets found for the conditions!")
 
 
@@ -88,6 +90,27 @@ def check_elements_reversed(
             continue
         else:
             raise ElementFoundError(f"Element found: '{condition}'")
+
+
+def wait_for_element_to_disappear(
+    app: Union[urpa.App, urpa.AppElement],
+    condition: urpa.Condition,
+    timeout: int = 5000,
+) -> None:
+    """Waits until element with `condition` exists
+
+    :param app:            urpa app or app element
+    :param condition:      cf condition of the element
+    :param timeout:        timeout in ms. Raises TimeoutError if timeout is reached
+    :return:               None
+    """
+    logger.debug(f"Waiting for element {condition} to disappear")
+    t = urpatimeout.Timeout(timeout)
+    while not t.is_expired():
+        if not app.find_all(condition):
+            return
+        time.sleep(0.1)
+    raise TimeoutError(f"Timeout while waiting for element {condition} to disappear")
 
 
 def robot_setup(

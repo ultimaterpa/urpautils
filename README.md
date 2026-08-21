@@ -218,6 +218,9 @@ urpautils.setup_robot((1920, 1080, 32), 10000, "png", True)
 # Search for two or more elements in parallel
 index, elements = urpautils.parallel_search(urpa.App, cf.window(), cf.button())
 
+# Wait for the element to disappear. Useful when waiting for some kind of "loading..." element to disappear
+urpautils.wait_for_element_to_disappear(app, cf.name("loading"), 5000)
+
 # Find control elements
 urpautils.check_elements(urpa.App, cf.window(), cf.button())
 

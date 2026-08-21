@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0] - 2026-08-21
+### Added
+- Function `wait_for_element_to_disappear`
+- 100ms sleep between searches in function `parallel_search`
+
+### Fixed
+- Return typehint for function `parallel_search`
+
 ## [0.10.1] - 2025-01-16
 ### Fixed
 - Typehints for functions `parallel_search`, `check_elements`, `check_elements_reversed`
