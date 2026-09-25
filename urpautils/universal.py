@@ -444,12 +444,12 @@ def is_account_number_valid(prefix: str, account_number: str) -> bool:
     return account_number_remainder == 0
 
 
-def remove_accents(input_str: str | None) -> str | None:
+def remove_accents(input_str: Optional[str]) -> Optional[str]:
     """
     Removes diacritics from a string. For example "jedna dvě tři" -> "jedna dve tri"
 
-    :param input_str:   str | None, The input string.
-    :return:            str | None, The string without diacritics, or None if input is None.
+    :param input_str:   Optional[str], The input string.
+    :return:            Optional[str], The string without diacritics, or None if input is None.
     """
     if input_str is None:
         return None

@@ -1,6 +1,5 @@
 """Unit tests for all functions in universal.py file"""
 
-
 import datetime
 from typing import Union
 
@@ -247,3 +246,10 @@ class TestIsAccountNumberValid:
         # Invalid the main part of the account number
         with pytest.raises(ValueError):
             universal.is_account_number_valid("12345", 67890)
+
+
+def test_remove_accents():
+    """Test remove accents function"""
+    assert universal.remove_accents("jedna dvě tři") == "jedna dve tri"
+    assert universal.remove_accents("jedna") == "jedna"
+    assert universal.remove_accents(None) is None

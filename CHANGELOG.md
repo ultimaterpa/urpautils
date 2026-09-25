@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.1] - 2026-09-25
+### Fixed
+- Changed typehints for `remove_accents` to older `typing` module to preserve compatibility with older python versions
+- Added unit test for function `remove_accents`
+
 ## [0.12.0] - 2026-09-25
 ### Added
 - Function `remove_accents`
