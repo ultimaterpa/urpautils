@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.12.0] - 2026-09-25
+### Added
+- Function `remove_accents`
+
 ## [0.11.0] - 2026-08-21
 ### Added
 - Function `wait_for_element_to_disappear`

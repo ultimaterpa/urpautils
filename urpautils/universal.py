@@ -8,6 +8,7 @@ import re
 import smtplib
 import subprocess
 import time
+import unicodedata
 from typing import List, Optional, Callable
 
 from email import charset
@@ -16,7 +17,6 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import holidays
-
 
 logger = logging.getLogger(__name__)
 
@@ -442,3 +442,16 @@ def is_account_number_valid(prefix: str, account_number: str) -> bool:
         account_number_sum += int(digit) * weight
     account_number_remainder = account_number_sum % 11
     return account_number_remainder == 0
+
+
+def remove_accents(input_str: str | None) -> str | None:
+    """
+    Removes diacritics from a string. For example "jedna dvě tři" -> "jedna dve tri"
+
+    :param input_str:   str | None, The input string.
+    :return:            str | None, The string without diacritics, or None if input is None.
+    """
+    if input_str is None:
+        return None
+    nfkd_form = unicodedata.normalize("NFKD", input_str)
+    return "".join(c for c in nfkd_form if not unicodedata.combining(c))

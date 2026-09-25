@@ -199,6 +199,9 @@ previous_work_day_date = get_previous_work_day_date(today=datetime.date(2021, 9,
 has_time = urpautils.robot_has_time(end="14:00:00")  # time in range 00:00:00 - 14:00:00
 has_time = urpautils.robot_has_time(start="11:00:00")  # time in range 11:00:00 - 23:59:59
 has_time = urpautils.robot_has_time("12:00:00", "14:00:00")  # time in range 12:00:00 - 14:00:00
+
+# Remove accents from a string
+normalized_string = remove_accents("jedna dvě tři")  # returns "jedna dve tri"
 ```
 
 ## Utilities dependent on the urpa library examples
