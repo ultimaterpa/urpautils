@@ -50,6 +50,73 @@ class Test_email:
         pass
 
 
+class FakeSMTP:
+    """Records calls made by send_email_notification instead of talking to a real server"""
+
+    instances: list = []
+    fail_times = 0
+
+    def __init__(self, host, port, **kwargs):
+        self.calls = [("init", host, port, kwargs)]
+        FakeSMTP.instances.append(self)
+        if FakeSMTP.fail_times > 0:
+            FakeSMTP.fail_times -= 1
+            raise ConnectionRefusedError("refused")
+
+    def __getattr__(self, name):
+        if name in ("set_debuglevel", "ehlo", "starttls", "login", "sendmail", "quit", "close"):
+            return lambda *args, **kwargs: self.calls.append((name, args, kwargs))
+        raise AttributeError(name)
+
+    def names(self):
+        return [call[0] for call in self.calls]
+
+
+class Test_send_email_smtp:
+    """Test SMTP options of send_email_notification using a fake SMTP class"""
+
+    ARGS = ("sender@example.com", ["to@example.com"], ["cc@example.com"], "subject", "body", "smtp.example.com")
+
+    @pytest.fixture(autouse=True)
+    def fake_smtp(self, monkeypatch):
+        FakeSMTP.instances = []
+        FakeSMTP.fail_times = 0
+        monkeypatch.setattr(universal.smtplib, "SMTP", FakeSMTP)
+        monkeypatch.setattr(universal.time, "sleep", lambda _: None)
+
+    def test_default_is_unchanged(self):
+        universal.send_email_notification(*self.ARGS)
+        smtp = FakeSMTP.instances[0]
+        assert smtp.names() == ["init", "set_debuglevel", "sendmail", "quit"]
+        assert smtp.calls[0] == ("init", "smtp.example.com", 0, {})
+
+    def test_starttls_and_login(self):
+        universal.send_email_notification(
+            *self.ARGS, smtp_port=25, use_starttls=True, smtp_user="user", smtp_password="secret", timeout=30
+        )
+        smtp = FakeSMTP.instances[0]
+        assert smtp.names() == ["init", "set_debuglevel", "ehlo", "starttls", "ehlo", "login", "sendmail", "quit"]
+        assert smtp.calls[0] == ("init", "smtp.example.com", 25, {"timeout": 30})
+        assert smtp.calls[5][1] == ("user", "secret")
+        assert "context" in smtp.calls[3][2]
+
+    def test_retries(self):
+        FakeSMTP.fail_times = 2
+        universal.send_email_notification(*self.ARGS, retries=2)
+        assert len(FakeSMTP.instances) == 3
+        assert "sendmail" in FakeSMTP.instances[-1].names()
+
+    def test_retries_exhausted(self):
+        FakeSMTP.fail_times = 3
+        with pytest.raises(ConnectionRefusedError):
+            universal.send_email_notification(*self.ARGS, retries=2)
+        assert len(FakeSMTP.instances) == 3
+
+    def test_password_without_user(self):
+        with pytest.raises(ValueError):
+            universal.send_email_notification(*self.ARGS, smtp_password="secret")
+
+
 class Test_get_birth_date:
     """Test correct reading of a birth date from personal identification number"""
 

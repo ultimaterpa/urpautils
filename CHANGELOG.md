@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.13.0]
+### Added
+- Optional arguments `use_starttls`, `smtp_user`, `smtp_password`, `timeout`, `retries` and `retry_delay` for function `send_email_notification` (STARTTLS encryption, SMTP authentication, connection timeout and retries). Defaults keep the original behaviour
+- Decorator `failed_login_notification` passes extra keyword arguments to `send_email_notification`
+- Unit tests for SMTP options of `send_email_notification`
+
+### Fixed
+- Typo in function name in README: `urpautils.setup_robot()` -> `urpautils.robot_setup()`
+
 ## [0.12.1] - 2026-09-25
 ### Fixed
 - Changed typehints for `remove_accents` to older `typing` module to preserve compatibility with older python versions

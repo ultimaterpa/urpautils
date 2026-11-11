@@ -324,6 +324,7 @@ def failed_login_notification(
     smtp_port: int = 0,
     screenshot_format: str = "png",
     current_log_dir: str = "",
+    **email_kwargs,
 ) -> Callable:
     """Decorator function. If exception is raised in decorated function it sends an email with a screenshot.
 
@@ -336,6 +337,8 @@ def failed_login_notification(
     :param smtp_port:         optional port for the smtp server. smtplib.SMTP_PORT (=25) is used if not provided
     :param screenshot_format: format of screenshot taken
     :param current_log_dir:   directory containing the screenshot. Defaults to 'log\main_module_name_YYYY-MM-DD'
+    :param email_kwargs:      optional keyword args passed to `send_email_notification`
+                              (e.g. use_starttls, smtp_user, smtp_password, timeout, retries, retry_delay)
     :return:                  None
     """
 
@@ -347,7 +350,15 @@ def failed_login_notification(
             urpa.take_screenshot()
             screenshot_path = _get_error_screenshot_path(screenshot_format, current_log_dir, 0)
             send_email_notification(
-                email_sender, recipients, recipients_copy, subject, body, smtp_server, smtp_port, [screenshot_path]
+                email_sender,
+                recipients,
+                recipients_copy,
+                subject,
+                body,
+                smtp_server,
+                smtp_port,
+                [screenshot_path],
+                **email_kwargs,
             )
             raise err
 
