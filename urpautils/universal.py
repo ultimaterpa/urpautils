@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import smtplib
+import ssl
 import subprocess
 import time
 import unicodedata
@@ -69,6 +70,12 @@ def send_email_notification(
     smtp_port: int = 0,
     attachments: List[str] = [],
     debug_level: int = 0,
+    use_starttls: bool = False,
+    smtp_user: Optional[str] = None,
+    smtp_password: Optional[str] = None,
+    timeout: Optional[float] = None,
+    retries: int = 0,
+    retry_delay: float = 5,
 ) -> None:
     """Sends an e-mail
 
@@ -81,8 +88,16 @@ def send_email_notification(
     :param smtp_port:       optional port for the smtp server. smtplib.SMTP_PORT (=25) is used if not provided
     :param attachments:     optional list of attachments' file paths
     :param debug_level:     optional int, default is 0
+    :param use_starttls:    upgrade the connection to TLS using STARTTLS (server certificate is verified)
+    :param smtp_user:       optional username for SMTP authentication. Login is performed only if provided
+    :param smtp_password:   optional password for SMTP authentication
+    :param timeout:         optional connection timeout in seconds. Global socket default is used if not provided
+    :param retries:         number of additional attempts if sending fails. Defaults to 0 (no retry)
+    :param retry_delay:     delay between attempts in seconds
     :return:                None
     """
+    if smtp_password is not None and smtp_user is None:
+        raise ValueError("smtp_password was provided without smtp_user")
 
     charset.add_charset("utf-8", charset.QP, charset.QP)
 
@@ -107,10 +122,31 @@ def send_email_notification(
 
     logger.info(f"Sending e-mail to '{recipients}', copy: '{recipients_copy}'")
     logger.debug(f"Subject: '{subject}', body: '{body}'")
-    sender = smtplib.SMTP(smtp_server, smtp_port)
-    sender.set_debuglevel(debug_level)
-    sender.sendmail(email_sender, recipients + recipients_copy, mail.as_string())
-    sender.quit()
+    message = mail.as_string()
+    smtp_kwargs = {} if timeout is None else {"timeout": timeout}
+    for attempt in range(retries + 1):
+        try:
+            sender = smtplib.SMTP(smtp_server, smtp_port, **smtp_kwargs)  # type: ignore
+            try:
+                sender.set_debuglevel(debug_level)
+                if use_starttls:
+                    sender.ehlo()
+                    sender.starttls(context=ssl.create_default_context())
+                    sender.ehlo()
+                if smtp_user is not None:
+                    sender.login(smtp_user, smtp_password or "")
+                sender.sendmail(email_sender, recipients + recipients_copy, message)
+            finally:
+                try:
+                    sender.quit()
+                except (smtplib.SMTPException, OSError):
+                    sender.close()
+            break
+        except (smtplib.SMTPException, OSError) as err:
+            if attempt >= retries:
+                raise
+            logger.warning(f"Sending e-mail failed (attempt {attempt + 1}/{retries + 1}): {err}. Retrying...")
+            time.sleep(retry_delay)
     logger.info("E-mail sent")
 
 

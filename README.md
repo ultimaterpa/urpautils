@@ -160,6 +160,30 @@ urpautils.send_email_notification(
     attachments = ["path/to/file1.jpg", "path/to/file2.jpg"]
 )
 
+# Send an email over STARTTLS with SMTP authentication, timeout and retries
+# All of these arguments are optional, keyword-only in practice and default to the original behaviour
+#   'use_starttls': upgrade the connection with STARTTLS (server certificate is verified). Defaults to False
+#   'smtp_user', 'smtp_password': login is performed only if 'smtp_user' is provided.
+#       The password is passed in by the caller (e.g. loaded from a secure credential store), never stored by urpautils
+#   'timeout': connection timeout in seconds. Global socket default is used if not provided
+#   'retries': number of additional attempts if sending fails. Defaults to 0
+#   'retry_delay': delay between attempts in seconds. Defaults to 5
+urpautils.send_email_notification(
+    "sender@stringdata.cz",
+    ["recipient1@gmail.com"],
+    [],
+    "This is a subject",
+    "This is the email body",
+    "smtp.example.com",
+    smtp_port=25,
+    use_starttls=True,
+    smtp_user="robot",
+    smtp_password=password,
+    timeout=30,
+    retries=2,
+    retry_delay=10,
+)
+
 # Repeat certain commands in a function/method
 @urpautils.repeat(action="Click on OK")
 def click_ok() -> None:
@@ -212,9 +236,9 @@ import urpautils
 cf = urpa.condition_factory()
 
 # Setup robot
-urpautils.setup_robot()
+urpautils.robot_setup()
 # Setup robot with 1920x1080 32bit resolution, 10000ms timeout, png screenshot format, debug mode
-urpautils.setup_robot((1920, 1080, 32), 10000, "png", True)
+urpautils.robot_setup((1920, 1080, 32), 10000, "png", True)
 # IMPORTANT NOTE: Even though all args are optional, it is higly recommended to use atleast resolution arg in a production.
 # It is optional for test purpouses: some RDP sessions are killed when resolution is changed. Which is annoying for development
 
@@ -253,6 +277,7 @@ urpautils.save_as("file.txt", open_open_file_window=True, app_elem=some_app_elem
 
 # Decorate a function to send an email with error screenshot if an Exception is raised
 # Decorator function has optional arguments smtp_port (default 25), screenshot_format (default "png"), current_log_dir (default "log\name_of_main_file_RRRR-MM-DD")
+# Any other keyword argument (use_starttls, smtp_user, smtp_password, timeout, retries, retry_delay) is passed to `send_email_notification`
 @urpautils.failed_login_notification(
     "sender@stringdata.cz",
     ["receiver@stringdata.cz"],
